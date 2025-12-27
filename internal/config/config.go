@@ -33,7 +33,7 @@ func Load(path string) (*Config, error) {
 	}
 
 	if cfg.ListenerPort == 0 {
-		cfg.ListenerPort = 18080
+		cfg.ListenerPort = 80
 	}
 	if len(cfg.Services) == 0 {
 		return nil, fmt.Errorf("no services configured in %s", path)

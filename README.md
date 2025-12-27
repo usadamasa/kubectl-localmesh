@@ -90,7 +90,7 @@ brew install envoy
 Create a services.yaml file:
 
 ```yaml
-listener_port: 18080
+listener_port: 80
 services:
   - host: users-api.localhost
     namespace: users
@@ -153,8 +153,8 @@ Access services
 
 By default, `/etc/hosts` is automatically updated, enabling simple hostname-based access:
 
-- HTTP: `curl http://billing-api.localhost:18080/health`
-- gRPC: `grpcurl -plaintext users-api.localhost:18080 list`
+- HTTP: `curl http://billing-api.localhost/health`
+- gRPC: `grpcurl -plaintext users-api.localhost list`
 
 When using port 80 (set `listener_port: 80` in config):
 

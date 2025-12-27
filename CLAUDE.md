@@ -16,7 +16,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```
 クライアント
-  ↓ (http://users-api.localhost:18080)
+  ↓ (http://users-api.localhost:80)
 ローカルEnvoy (ホストベースルーティング)
   ↓ (動的に割り当てられたローカルポート)
 kubectl port-forward (各サービスごとに自動起動・再接続)
@@ -28,7 +28,7 @@ Kubernetesサービス
 
 1. **config** (`internal/config/`)
    - YAMLベースの設定ファイル読み込み
-   - `listener_port`: Envoyが待ち受けるローカルポート（デフォルト: 18080）
+   - `listener_port`: Envoyが待ち受けるローカルポート（デフォルト: 80）
    - `services`: ルーティング対象のサービス一覧（host, namespace, service, port/port_name, type）
 
 2. **kube** (`internal/kube/`)
@@ -133,7 +133,7 @@ EOF
 ## 設定ファイル形式
 
 ```yaml
-listener_port: 18080
+listener_port: 80
 services:
   - host: users-api.localhost       # ローカルアクセス用ホスト名
     namespace: users                 # K8s namespace
