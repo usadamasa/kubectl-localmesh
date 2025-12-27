@@ -14,8 +14,9 @@ import (
 
 func main() {
 	var (
-		fConfig = flag.String("f", "", "config yaml path (e.g. services.yaml)")
-		fLog    = flag.String("log", "info", "log level: debug|info|warn")
+		fConfig          = flag.String("f", "", "config yaml path (e.g. services.yaml)")
+		fLog             = flag.String("log", "info", "log level: debug|info|warn")
+		fDumpEnvoyConfig = flag.Bool("dump-envoy-config", false, "dump envoy config to stdout and exit")
 	)
 	flag.Parse()
 
@@ -36,6 +37,14 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	if *fDumpEnvoyConfig {
+		if err := run.DumpEnvoyConfig(ctx, cfg); err != nil {
+			fmt.Fprintln(os.Stderr, err.Error())
+			os.Exit(1)
+		}
+		return
+	}
 
 	sigCh := make(chan os.Signal, 2)
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)

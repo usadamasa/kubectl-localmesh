@@ -104,6 +104,44 @@ func Run(ctx context.Context, cfg *config.Config, logLevel string) error {
 	return err
 }
 
+func DumpEnvoyConfig(ctx context.Context, cfg *config.Config) error {
+	var routes []envoy.Route
+
+	for i, s := range cfg.Services {
+		remotePort, err := kube.ResolveServicePort(
+			ctx,
+			s.Namespace,
+			s.Service,
+			s.PortName,
+			s.Port,
+		)
+		if err != nil {
+			return err
+		}
+
+		// ダミーのローカルポートを割り当て（実際にはport-forwardしない）
+		dummyLocalPort := 10000 + i
+
+		clusterName := sanitize(fmt.Sprintf("%s_%s_%d", s.Namespace, s.Service, remotePort))
+
+		routes = append(routes, envoy.Route{
+			Host:        s.Host,
+			LocalPort:   dummyLocalPort,
+			ClusterName: clusterName,
+		})
+	}
+
+	envoyCfg := envoy.BuildConfig(cfg.ListenerPort, routes)
+
+	b, err := yaml.Marshal(envoyCfg)
+	if err != nil {
+		return err
+	}
+
+	fmt.Print(string(b))
+	return nil
+}
+
 func sanitize(s string) string {
 	out := make([]rune, 0, len(s))
 	for _, r := range s {
