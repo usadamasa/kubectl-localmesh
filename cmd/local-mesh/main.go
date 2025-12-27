@@ -18,6 +18,7 @@ func main() {
 		fLog             = flag.String("log", "info", "log level: debug|info|warn")
 		fDumpEnvoyConfig = flag.Bool("dump-envoy-config", false, "dump envoy config to stdout and exit")
 		fMockConfig      = flag.String("mock-config", "", "mock config for offline mode (works with --dump-envoy-config)")
+		fUpdateHosts     = flag.Bool("update-hosts", true, "update /etc/hosts (requires sudo)")
 	)
 	flag.Parse()
 
@@ -54,7 +55,7 @@ func main() {
 		cancel()
 	}()
 
-	if err := run.Run(ctx, cfg, *fLog); err != nil {
+	if err := run.Run(ctx, cfg, *fLog, *fUpdateHosts); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}

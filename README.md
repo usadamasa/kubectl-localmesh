@@ -120,37 +120,85 @@ Notes:
 
 ### Run
 
-```
-kubectl local-mesh -f services.yaml
+By default, kubectl-local-mesh automatically updates `/etc/hosts`, which requires sudo:
+
+```bash
+sudo kubectl local-mesh -f services.yaml
 ```
 
 Or directly:
 
+```bash
+sudo kubectl-local-mesh services.yaml
 ```
-kubectl-local-mesh services.yaml
+
+To disable automatic `/etc/hosts` update:
+
+```bash
+kubectl-local-mesh -f services.yaml --update-hosts=false
 ```
 
 Example output:
 
 ```
+/etc/hosts updated successfully
 pf: users-api.localhost -> users/users-api:50051 via 127.0.0.1:43127
 pf: billing-api.localhost -> billing/billing-api:8080 via 127.0.0.1:51234
 
+envoy config: /tmp/kubectl-local-mesh-XXXXXX/envoy.yaml
 listen: 0.0.0.0:18080
 ```
 
 Access services
 
+By default, `/etc/hosts` is automatically updated, enabling simple hostname-based access:
+
 - HTTP: `curl http://billing-api.localhost:18080/health`
 - gRPC: `grpcurl -plaintext users-api.localhost:18080 list`
 
+When using port 80 (set `listener_port: 80` in config):
+
+- HTTP: `curl http://billing-api.localhost/health`
+- gRPC: `grpcurl -plaintext users-api.localhost list`
+
 No local port numbers to remember.
 No conflicts to resolve.
+No Host header required.
 
 gRPC notes
 - gRPC is supported over plaintext (h2c)
 - Clients must allow non-TLS connections (e.g. grpcurl -plaintext)
 - If your client requires TLS, Envoy can be configured for local TLS termination (future work)
+
+### /etc/hosts Automatic Management
+
+By default, kubectl-local-mesh automatically updates `/etc/hosts` to enable simple hostname-based access without specifying the Host header.
+
+**Default behavior (requires sudo):**
+
+```bash
+sudo kubectl-local-mesh -f services.yaml
+```
+
+This automatically adds entries like:
+
+```
+127.0.0.1 users-api.localhost
+127.0.0.1 billing-api.localhost
+```
+
+**Disable automatic /etc/hosts update:**
+
+```bash
+kubectl-local-mesh -f services.yaml --update-hosts=false
+
+# In this case, you need to specify the Host header manually:
+curl -H "Host: users-api.localhost" http://127.0.0.1:18080/
+```
+
+**Cleanup:**
+
+When you stop kubectl-local-mesh (Ctrl+C), it automatically removes the managed entries from /etc/hosts.
 
 ### Advanced Usage
 

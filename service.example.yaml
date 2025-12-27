@@ -1,4 +1,4 @@
-listener_port: 18080
+listener_port: 80
 services:
   - host: users-api.localhost
     namespace: users
