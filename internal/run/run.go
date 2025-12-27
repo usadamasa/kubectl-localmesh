@@ -11,11 +11,41 @@ import (
 
 	"github.com/usadamasa/kubectl-local-mesh/internal/config"
 	"github.com/usadamasa/kubectl-local-mesh/internal/envoy"
+	"github.com/usadamasa/kubectl-local-mesh/internal/hosts"
 	"github.com/usadamasa/kubectl-local-mesh/internal/kube"
 	"github.com/usadamasa/kubectl-local-mesh/internal/pf"
 )
 
-func Run(ctx context.Context, cfg *config.Config, logLevel string) error {
+func Run(ctx context.Context, cfg *config.Config, logLevel string, updateHosts bool) error {
+	// /etc/hosts更新が必要な場合
+	if updateHosts {
+		// 権限チェック
+		if !hosts.HasPermission() {
+			return fmt.Errorf("need sudo: try 'sudo kubectl-local-mesh ...'")
+		}
+
+		// ホスト名リストを収集
+		var hostnames []string
+		for _, s := range cfg.Services {
+			hostnames = append(hostnames, s.Host)
+		}
+
+		// /etc/hostsに追加
+		if err := hosts.AddEntries(hostnames); err != nil {
+			return fmt.Errorf("failed to update /etc/hosts: %w", err)
+		}
+		fmt.Println("/etc/hosts updated successfully")
+
+		// 終了時にクリーンアップ
+		defer func() {
+			if err := hosts.RemoveEntries(); err != nil {
+				fmt.Fprintf(os.Stderr, "warning: failed to clean up /etc/hosts: %v\n", err)
+			} else {
+				fmt.Println("/etc/hosts cleaned up")
+			}
+		}()
+	}
+
 	tmpDir, err := os.MkdirTemp("", "kubectl-local-mesh-")
 	if err != nil {
 		return err

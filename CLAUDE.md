@@ -47,7 +47,12 @@ Kubernetesサービス
    - ホストベースのvirtual_hosts設定
    - 各サービスへのSTATICクラスタ定義
 
-5. **run** (`internal/run/`)
+5. **hosts** (`internal/hosts/`)
+   - /etc/hosts ファイルの管理
+   - マーカーコメントによるエントリの追跡・削除
+   - 書き込み権限チェック
+
+6. **run** (`internal/run/`)
    - オーケストレーションロジック
    - 各サービスに対してport-forwardプロセスを起動
    - Envoy設定を生成・適用
@@ -65,11 +70,14 @@ go build -o kubectl-local-mesh ./cmd/local-mesh
 ### 実行
 
 ```bash
-# 設定ファイルを指定して実行
-./kubectl-local-mesh -f services.yaml
+# 通常起動（/etc/hostsを自動更新、sudo必要）
+sudo ./kubectl-local-mesh -f services.yaml
+
+# /etc/hosts更新を無効化
+./kubectl-local-mesh -f services.yaml --update-hosts=false
 
 # ログレベル指定
-./kubectl-local-mesh -f services.yaml -log debug
+sudo ./kubectl-local-mesh -f services.yaml -log debug
 ```
 
 ### テスト
@@ -175,6 +183,23 @@ done
 - `run.Run()`は一時ディレクトリ（`kubectl-local-mesh-*`）を作成し、終了時に削除
 - すべてのport-forwardプロセスは`ctx`のキャンセルで停止
 - Envoyプロセスも`CommandContext`で管理
+
+### /etc/hosts自動管理
+
+`internal/hosts/hosts.go`でマーカーコメントを使用した安全な管理:
+
+```
+# kubectl-local-mesh: managed by kubectl-local-mesh
+127.0.0.1 users-api.localhost
+127.0.0.1 billing-api.localhost
+# kubectl-local-mesh: end
+```
+
+- `--update-hosts`フラグのデフォルトは`true`
+- 通常起動時は自動的に/etc/hostsを更新（sudo必要）
+- 終了時（Ctrl+C）に自動クリーンアップ
+- `--dump-envoy-config`モードでは更新しない
+- 一時ファイル経由で安全に書き換え
 
 ## 今後の拡張
 
