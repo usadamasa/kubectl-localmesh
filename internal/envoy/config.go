@@ -85,7 +85,12 @@ func BuildConfig(listenerPort int, routes []Route) map[string]any {
 											"virtual_hosts": vhosts,
 										},
 										"http_filters": []any{
-											map[string]any{"name": "envoy.filters.http.router"},
+											map[string]any{
+												"name": "envoy.filters.http.router",
+												"typed_config": map[string]any{
+													"@type": "type.googleapis.com/envoy.extensions.filters.http.router.v3.Router",
+												},
+											},
 										},
 									},
 								},

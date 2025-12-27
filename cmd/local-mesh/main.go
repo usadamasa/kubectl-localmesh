@@ -17,6 +17,7 @@ func main() {
 		fConfig          = flag.String("f", "", "config yaml path (e.g. services.yaml)")
 		fLog             = flag.String("log", "info", "log level: debug|info|warn")
 		fDumpEnvoyConfig = flag.Bool("dump-envoy-config", false, "dump envoy config to stdout and exit")
+		fMockConfig      = flag.String("mock-config", "", "mock config for offline mode (works with --dump-envoy-config)")
 	)
 	flag.Parse()
 
@@ -39,7 +40,7 @@ func main() {
 	defer cancel()
 
 	if *fDumpEnvoyConfig {
-		if err := run.DumpEnvoyConfig(ctx, cfg); err != nil {
+		if err := run.DumpEnvoyConfig(ctx, cfg, *fMockConfig); err != nil {
 			fmt.Fprintln(os.Stderr, err.Error())
 			os.Exit(1)
 		}

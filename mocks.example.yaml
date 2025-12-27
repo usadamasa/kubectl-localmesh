@@ -1,0 +1,15 @@
+mocks:
+  - namespace: users
+    service: users-api
+    port_name: grpc
+    resolved_port: 50051
+
+  - namespace: billing
+    service: billing-api
+    port_name: http
+    resolved_port: 8080
+
+  - namespace: admin
+    service: admin-web
+    port_name: ""
+    resolved_port: 8080

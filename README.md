@@ -152,6 +152,55 @@ gRPC notes
 - Clients must allow non-TLS connections (e.g. grpcurl -plaintext)
 - If your client requires TLS, Envoy can be configured for local TLS termination (future work)
 
+### Advanced Usage
+
+#### Dump Envoy Configuration
+
+You can dump the generated Envoy configuration to stdout for debugging or inspection:
+
+```bash
+kubectl-local-mesh --dump-envoy-config -f services.yaml
+
+# Save to file
+kubectl-local-mesh --dump-envoy-config -f services.yaml > envoy-config.yaml
+```
+
+This is useful for:
+- Understanding the generated Envoy configuration
+- Debugging routing issues
+- Learning Envoy configuration patterns
+
+#### Offline Mode (Mock Configuration)
+
+You can generate Envoy configuration without connecting to a Kubernetes cluster by using a mock configuration file:
+
+```bash
+# Create a mock configuration file
+cat > mocks.yaml <<EOF
+mocks:
+  - namespace: users
+    service: users-api
+    port_name: grpc
+    resolved_port: 50051
+  - namespace: billing
+    service: billing-api
+    port_name: http
+    resolved_port: 8080
+  - namespace: admin
+    service: admin-web
+    port_name: ""
+    resolved_port: 8080
+EOF
+
+# Dump config using mocks (no cluster connection required)
+kubectl-local-mesh --dump-envoy-config -f services.yaml --mock-config mocks.yaml
+```
+
+This is useful for:
+- Testing configuration changes without cluster access
+- CI/CD pipelines
+- Offline development
+
 ---
 
 What this is NOT

@@ -57,3 +57,32 @@ func Load(path string) (*Config, error) {
 
 	return &cfg, nil
 }
+
+type MockConfig struct {
+	Mocks []MockService `yaml:"mocks"`
+}
+
+type MockService struct {
+	Namespace    string `yaml:"namespace"`
+	Service      string `yaml:"service"`
+	PortName     string `yaml:"port_name"`
+	ResolvedPort int    `yaml:"resolved_port"`
+}
+
+func LoadMockConfig(path string) (*MockConfig, error) {
+	if path == "" {
+		return nil, nil
+	}
+
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var mockCfg MockConfig
+	if err := yaml.Unmarshal(b, &mockCfg); err != nil {
+		return nil, err
+	}
+
+	return &mockCfg, nil
+}

@@ -104,19 +104,41 @@ func Run(ctx context.Context, cfg *config.Config, logLevel string) error {
 	return err
 }
 
-func DumpEnvoyConfig(ctx context.Context, cfg *config.Config) error {
+func DumpEnvoyConfig(ctx context.Context, cfg *config.Config, mockConfigPath string) error {
+	var mockCfg *config.MockConfig
+	var err error
+
+	// モック設定の読み込み
+	if mockConfigPath != "" {
+		mockCfg, err = config.LoadMockConfig(mockConfigPath)
+		if err != nil {
+			return fmt.Errorf("failed to load mock config: %w", err)
+		}
+	}
+
 	var routes []envoy.Route
 
 	for i, s := range cfg.Services {
-		remotePort, err := kube.ResolveServicePort(
-			ctx,
-			s.Namespace,
-			s.Service,
-			s.PortName,
-			s.Port,
-		)
-		if err != nil {
-			return err
+		var remotePort int
+
+		// モック設定が指定されている場合はモックから取得
+		if mockCfg != nil {
+			remotePort, err = findMockPort(mockCfg, s.Namespace, s.Service, s.PortName)
+			if err != nil {
+				return err
+			}
+		} else {
+			// モック設定がない場合は通常通りkubectlで解決
+			remotePort, err = kube.ResolveServicePort(
+				ctx,
+				s.Namespace,
+				s.Service,
+				s.PortName,
+				s.Port,
+			)
+			if err != nil {
+				return err
+			}
 		}
 
 		// ダミーのローカルポートを割り当て（実際にはport-forwardしない）
@@ -140,6 +162,15 @@ func DumpEnvoyConfig(ctx context.Context, cfg *config.Config) error {
 
 	fmt.Print(string(b))
 	return nil
+}
+
+func findMockPort(mockCfg *config.MockConfig, namespace, service, portName string) (int, error) {
+	for _, m := range mockCfg.Mocks {
+		if m.Namespace == namespace && m.Service == service && m.PortName == portName {
+			return m.ResolvedPort, nil
+		}
+	}
+	return 0, fmt.Errorf("mock config not found for %s/%s (port_name=%s)", namespace, service, portName)
 }
 
 func sanitize(s string) string {

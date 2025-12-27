@@ -84,6 +84,44 @@ go test ./...
 - `internal/pf`: port allocation logic
 - `internal/envoy`: config generation
 
+### Envoy設定のダンプ
+
+Envoy設定をYAML形式で標準出力にダンプ:
+
+```bash
+# 基本的な使用方法（クラスタ接続が必要）
+./kubectl-local-mesh --dump-envoy-config -f services.yaml
+
+# ファイルにリダイレクト
+./kubectl-local-mesh --dump-envoy-config -f services.yaml > envoy-config.yaml
+```
+
+### オフラインモード（モック設定）
+
+Kubernetesクラスタに接続せずにEnvoy設定を確認:
+
+```bash
+# モック設定ファイルを作成
+cat > mocks.yaml <<EOF
+mocks:
+  - namespace: users
+    service: users-api
+    port_name: grpc
+    resolved_port: 50051
+  - namespace: billing
+    service: billing-api
+    port_name: http
+    resolved_port: 8080
+EOF
+
+# モック設定を使ってダンプ
+./kubectl-local-mesh --dump-envoy-config -f services.yaml --mock-config mocks.yaml
+```
+
+モック設定ファイル形式:
+- `namespace`, `service`, `port_name`でサービスを識別
+- `resolved_port`はkubectl呼び出しの代わりに使用するポート番号
+
 ## 設定ファイル形式
 
 ```yaml
