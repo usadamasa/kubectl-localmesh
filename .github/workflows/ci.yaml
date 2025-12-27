@@ -2,9 +2,19 @@
 name: CI
 
 "on":
-  push
+  push:
 
 jobs:
+  ci-status-check:
+    runs-on: ubuntu-slim
+    needs:
+      - build
+    if: failure()
+    timeout-minutes: 10
+    permissions: {}
+    steps:
+      - run: exit 1
+
   build:
     runs-on: ubuntu-latest
 
