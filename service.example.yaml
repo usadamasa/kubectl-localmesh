@@ -1,0 +1,19 @@
+listener_port: 18080
+services:
+  - host: users-api.localhost
+    namespace: users
+    service: users-api
+    port_name: grpc
+    type: grpc
+
+  - host: billing-api.localhost
+    namespace: billing
+    service: billing-api
+    port_name: http
+    type: http
+
+  - host: admin.localhost
+    namespace: admin
+    service: admin-web
+    port: 8080
+    type: http
