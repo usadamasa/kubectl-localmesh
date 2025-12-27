@@ -177,27 +177,21 @@ Design philosophy
 ---
 
 Roadmap ideas
-	•	krew distribution
-	•	Subcommands (up, down, status)
-	•	TLS support via local certificates
-	•	gRPC-web support
-	•	Envoy-less HTTP-only mode
-	•	Config hot-reload
-	•	Better status / diagnostics
+- krew distribution
+- Subcommands (up, down, status)
+- TLS support via local certificates
+- gRPC-web support
+- Envoy-less HTTP-only mode
+- Config hot-reload
+- Better status / diagnostics
 
 ---
 
 Naming
 
 kubectl-local-mesh means:
-	•	kubectl: kubectl-native workflow
-	•	local: strictly local execution
-	•	mesh: mesh-like routing behavior, not a real mesh
+- kubectl: kubectl-native workflow
+- local: strictly local execution
+- mesh: mesh-like routing behavior, not a real mesh
 
 It is intentionally explicit about its scope.
-
----
-
-License
-
-MIT
