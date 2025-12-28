@@ -48,8 +48,8 @@ Think of it as a **shadow gateway** for your cluster.
 ```
 [ client ]
 |
-|  http://users-api.localhost:18080
-|  grpc://billing-api.localhost:18080
+|  http://users-api.localhost
+|  grpc://billing-api.localhost
 v
 [ local Envoy ]
 |
@@ -64,7 +64,7 @@ v
 - Each Service gets its own `kubectl port-forward`
 - Local ports are dynamically allocated
 - Envoy routes traffic by `Host` / `:authority`
-- Envoy listens on a single local port (default: `18080`)
+- Envoy listens on a single local port (default: `80`)
 
 ---
 
@@ -146,7 +146,7 @@ pf: users-api.localhost -> users/users-api:50051 via 127.0.0.1:43127
 pf: billing-api.localhost -> billing/billing-api:8080 via 127.0.0.1:51234
 
 envoy config: /tmp/kubectl-local-mesh-XXXXXX/envoy.yaml
-listen: 0.0.0.0:18080
+listen: 0.0.0.0:80
 ```
 
 Access services
@@ -193,7 +193,7 @@ This automatically adds entries like:
 kubectl-local-mesh -f services.yaml --update-hosts=false
 
 # In this case, you need to specify the Host header manually:
-curl -H "Host: users-api.localhost" http://127.0.0.1:18080/
+curl -H "Host: users-api.localhost" http://127.0.0.1:80/
 ```
 
 **Cleanup:**
