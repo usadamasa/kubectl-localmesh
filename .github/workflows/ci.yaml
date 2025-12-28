@@ -4,11 +4,16 @@ name: CI
 "on":
   push:
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci-status-check:
     runs-on: ubuntu-slim
     needs:
       - build
+      - yamllint
     if: failure()
     timeout-minutes: 10
     permissions: {}
@@ -22,10 +27,31 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: aqua-installer
+        uses: ./.github/composites/aqua-installer
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
           go-version: 1.25
 
+      - name: test
+        run: task test
+
       - name: Build
-        run: go build cmd/local-mesh/main.go
+        run: task build
+
+  yamllint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "checkout"
+        uses: "actions/checkout@v4"
+
+      - name: "review yaml format"
+        uses: reviewdog/action-yamllint@v1
+        with:
+          github_token: "${{ secrets.GITHUB_TOKEN }}"
+          reporter: "github-pr-review"
+          level: "warning"
+          yamllint_flags: "-c .yamllint.yaml ."
+          fail_on_error: true

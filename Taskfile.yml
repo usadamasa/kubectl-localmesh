@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+tasks:
+  build:
+    desc: Build the project
+    cmds:
+      - go build -o bin/kubectl-local-mesh cmd/local-mesh/main.go
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test ./...
+
+  lint:
+    desc: Run Linters
+    cmds:
+      - yamllint -c .yamllint.yml .
+      - golangci-lint run
+
+  format:
+    desc: Format code
+    cmds:
+      - gofmt -w .
