@@ -61,16 +61,87 @@ Kubernetesサービス
 
 ## 開発コマンド
 
-### ビルド
+このプロジェクトでは、開発タスクの実行に[Task](https://taskfile.dev)を使用します。
+Task定義は`Taskfile.yml`に記載されています。
+
+### 推奨: Taskを使った開発ワークフロー
+
+#### ビルド
+
+```bash
+task build
+```
+
+バイナリは`bin/kubectl-local-mesh`に出力されます。
+
+#### テスト
+
+```bash
+task test
+```
+
+全パッケージのテストを実行します。
+
+現在、テストファイルは存在しませんが、将来的には以下のテスト戦略を推奨:
+- `internal/config`: YAML parsing, validation
+- `internal/kube`: kubectl command mocking
+- `internal/pf`: port allocation logic
+- `internal/envoy`: config generation
+
+#### コード品質管理
+
+**Lint (静的解析):**
+
+```bash
+task lint
+```
+
+以下のリンターを実行します:
+- `yamllint`: YAML設定ファイルの検証（`.yamllint.yaml`設定を使用）
+- `golangci-lint`: Goコードの静的解析
+
+**Format (コードフォーマット):**
+
+```bash
+task format
+```
+
+`gofmt`を使用してGoコードを自動フォーマットします。
+
+#### 利用可能なタスク一覧
+
+```bash
+task --list
+```
+
+すべてのタスクとその説明を表示します。
+
+### 直接Go CLIを使用する場合
+
+Taskを使用せず、直接Goコマンドで開発することも可能です。
+
+#### ビルド
 
 ```bash
 go build -o kubectl-local-mesh ./cmd/local-mesh
 ```
 
+**注意**: この方法では出力先がカレントディレクトリ（`./kubectl-local-mesh`）になります。
+Taskfile経由のビルドとは出力先が異なります。
+
+#### テスト
+
+```bash
+go test ./...
+```
+
 ### 実行
 
 ```bash
-# 通常起動（/etc/hostsを自動更新、sudo必要）
+# Task経由でビルドした場合
+sudo ./bin/kubectl-local-mesh -f services.yaml
+
+# 直接go buildした場合
 sudo ./kubectl-local-mesh -f services.yaml
 
 # /etc/hosts更新を無効化
@@ -79,18 +150,6 @@ sudo ./kubectl-local-mesh -f services.yaml
 # ログレベル指定
 sudo ./kubectl-local-mesh -f services.yaml -log debug
 ```
-
-### テスト
-
-```bash
-go test ./...
-```
-
-現在、テストファイルは存在しませんが、将来的には以下のテスト戦略を推奨:
-- `internal/config`: YAML parsing, validation
-- `internal/kube`: kubectl command mocking
-- `internal/pf`: port allocation logic
-- `internal/envoy`: config generation
 
 ### Envoy設定のダンプ
 
@@ -157,6 +216,17 @@ services:
 
 - **Go modules:**
   - `gopkg.in/yaml.v3`: 設定ファイルパース
+
+- **開発ツール (aqua管理):**
+  - `task`: タスクランナー（Taskfile.yml実行）
+  - `golangci-lint`: Go静的解析ツール
+  - `goreleaser`: リリース自動化ツール
+
+開発ツールのインストール:
+
+```bash
+aqua install
+```
 
 ## 重要な実装詳細
 

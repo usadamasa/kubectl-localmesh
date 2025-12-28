@@ -18,7 +18,7 @@ func HasPermission() bool {
 	if err != nil {
 		return false
 	}
-	f.Close()
+	_ = f.Close()
 	return true
 }
 
@@ -34,7 +34,7 @@ func AddEntries(hostnames []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open %s: %w", hostsFile, err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	// マーカー開始
 	if _, err := f.WriteString("\n" + markerStart + "\n"); err != nil {
@@ -64,7 +64,7 @@ func RemoveEntries() error {
 	if err != nil {
 		return fmt.Errorf("failed to open %s: %w", hostsFile, err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	var lines []string
 	scanner := bufio.NewScanner(f)
@@ -99,23 +99,21 @@ func RemoveEntries() error {
 	if err != nil {
 		return fmt.Errorf("failed to create temp file: %w", err)
 	}
+	defer func() { _ = out.Close() }()
+	defer func() { _ = os.Remove(tmpFile) }()
 
 	for _, line := range lines {
 		if _, err := out.WriteString(line + "\n"); err != nil {
-			out.Close()
-			os.Remove(tmpFile)
 			return err
 		}
 	}
 
 	if err := out.Close(); err != nil {
-		os.Remove(tmpFile)
 		return err
 	}
 
 	// 一時ファイルを/etc/hostsに上書き
 	if err := os.Rename(tmpFile, hostsFile); err != nil {
-		os.Remove(tmpFile)
 		return fmt.Errorf("failed to replace %s: %w", hostsFile, err)
 	}
 
