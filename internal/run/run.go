@@ -50,7 +50,7 @@ func Run(ctx context.Context, cfg *config.Config, logLevel string, updateHosts b
 	if err != nil {
 		return err
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	var routes []envoy.Route
 	var procs []*exec.Cmd

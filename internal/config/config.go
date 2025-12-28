@@ -50,9 +50,8 @@ func Load(path string) (*Config, error) {
 		if s.Host == "" || s.Namespace == "" || s.Service == "" {
 			return nil, fmt.Errorf("invalid service entry at index %d: host/namespace/service are required", i)
 		}
-		if s.Port == 0 && s.PortName == "" {
-			// OK: ports[0] fallbackを使う
-		}
+		// Port と PortName の両方が未指定の場合は、
+		// kube.ResolveServicePort() で自動的に ports[0] へフォールバックされる
 	}
 
 	return &cfg, nil
