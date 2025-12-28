@@ -46,6 +46,7 @@
 #       Prefix of commit message. Default is "[tagpr]"
 #
 [tagpr]
-	vPrefix = true
-	releaseBranch = main
-	versionFile = -
+  vPrefix = true
+  releaseBranch = main
+  versionFile = -
+  release = draft
