@@ -20,6 +20,7 @@ builds:
     goos:
       - linux
       - darwin
+    binary: "kubectl-local_mesh"
 
 archives:
   - formats: [tar.gz]

@@ -70,6 +70,11 @@ v
 
 ## Installation
 
+```sh
+go install github.com/jpeach/kubectl-local-mesh@latest
+kubectl local-mesh --help
+```
+
 ### Prerequisites
 
 - `kubectl`
@@ -135,7 +140,7 @@ sudo kubectl-local-mesh services.yaml
 To disable automatic `/etc/hosts` update:
 
 ```bash
-kubectl-local-mesh -f services.yaml --update-hosts=false
+kubectl local-mesh -f services.yaml --update-hosts=false
 ```
 
 Example output:
@@ -177,7 +182,7 @@ By default, kubectl-local-mesh automatically updates `/etc/hosts` to enable simp
 **Default behavior (requires sudo):**
 
 ```bash
-sudo kubectl-local-mesh -f services.yaml
+sudo kubectl local-mesh -f services.yaml
 ```
 
 This automatically adds entries like:
@@ -190,7 +195,7 @@ This automatically adds entries like:
 **Disable automatic /etc/hosts update:**
 
 ```bash
-kubectl-local-mesh -f services.yaml --update-hosts=false
+kubectl local-mesh -f services.yaml --update-hosts=false
 
 # In this case, you need to specify the Host header manually:
 curl -H "Host: users-api.localhost" http://127.0.0.1:80/
@@ -207,10 +212,7 @@ When you stop kubectl-local-mesh (Ctrl+C), it automatically removes the managed 
 You can dump the generated Envoy configuration to stdout for debugging or inspection:
 
 ```bash
-kubectl-local-mesh --dump-envoy-config -f services.yaml
-
-# Save to file
-kubectl-local-mesh --dump-envoy-config -f services.yaml > envoy-config.yaml
+kubectl local-mesh --dump-envoy-config -f services.yaml
 ```
 
 This is useful for:
@@ -241,10 +243,11 @@ mocks:
 EOF
 
 # Dump config using mocks (no cluster connection required)
-kubectl-local-mesh --dump-envoy-config -f services.yaml --mock-config mocks.yaml
+kubectl local-mesh --dump-envoy-config -f services.yaml --mock-config mocks.yaml
 ```
 
 This is useful for:
+
 - Testing configuration changes without cluster access
 - CI/CD pipelines
 - Offline development
@@ -265,6 +268,7 @@ It is for local development and debugging only.
 ---
 
 Design philosophy
+
 - Prefer kubectl primitives over cluster-side components
 - Keep failure modes obvious
 - Make it easy to start and easy to throw away
@@ -274,6 +278,7 @@ Design philosophy
 ---
 
 Roadmap ideas
+
 - krew distribution
 - Subcommands (up, down, status)
 - TLS support via local certificates
@@ -287,6 +292,7 @@ Roadmap ideas
 Naming
 
 kubectl-local-mesh means:
+
 - kubectl: kubectl-native workflow
 - local: strictly local execution
 - mesh: mesh-like routing behavior, not a real mesh
