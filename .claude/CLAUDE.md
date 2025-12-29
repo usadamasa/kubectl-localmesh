@@ -113,7 +113,9 @@ kubectl-local-mesh固有の運用操作を提供します。
 task build
 
 # 3. 起動
-sudo ./bin/kubectl-local-mesh -f services.yaml
+sudo kubectl local-mesh -f services.yaml
+# または
+sudo ./bin/kubectl-local_mesh -f services.yaml
 ```
 
 ## 設定ファイル形式

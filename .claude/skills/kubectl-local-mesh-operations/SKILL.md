@@ -12,20 +12,19 @@ allowed-tools: ["Bash", "Read"]
 
 ### 起動
 
-**標準起動（/etc/hosts自動更新あり、sudo必要）**:
+**kubectlプラグインとして起動（推奨、/etc/hosts自動更新あり、sudo必要）**:
 
 ```bash
-sudo ./bin/kubectl-local-mesh -f services.yaml
+sudo kubectl local-mesh -f services.yaml
 ```
 
-**Task経由でビルド済みの場合**:
+**直接実行の場合**:
 ```bash
-sudo ./bin/kubectl-local-mesh -f services.yaml
-```
+# Task経由でビルド済み、またはgo install済み
+sudo ./bin/kubectl-local_mesh -f services.yaml
 
-**直接go buildした場合**:
-```bash
-sudo ./kubectl-local-mesh -f services.yaml
+# 直接go buildした場合
+sudo ./kubectl-local_mesh -f services.yaml
 ```
 
 ### /etc/hosts管理オプション
@@ -33,7 +32,9 @@ sudo ./kubectl-local-mesh -f services.yaml
 **自動更新を無効化**:
 
 ```bash
-./kubectl-local-mesh -f services.yaml --update-hosts=false
+kubectl local-mesh -f services.yaml --update-hosts=false
+# または
+./kubectl-local_mesh -f services.yaml --update-hosts=false
 ```
 
 この場合、Hostヘッダーを手動指定:
