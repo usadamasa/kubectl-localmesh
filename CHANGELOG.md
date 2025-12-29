@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.1.5](https://github.com/usadamasa/kubectl-localmesh/compare/v0.1.4...v0.1.5) - 2025-12-29
+### Breaking Changes 🛠
+- refactor: rename project from kubectl-local-mesh to kubectl-localmesh by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/33
+
 ## [v0.1.4](https://github.com/usadamasa/kubectl-localmesh/compare/v0.1.3...v0.1.4) - 2025-12-29
 ### Other Changes
 - now by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/30
