@@ -6,7 +6,7 @@ tasks:
   build:
     desc: Build the project
     cmds:
-      - go build -o bin/kubectl-local-mesh cmd/local-mesh/main.go
+      - go build -o bin/kubectl-local-mesh main.go
 
   test:
     desc: Run tests

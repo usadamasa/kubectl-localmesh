@@ -123,7 +123,7 @@ Taskを使用せず、直接Goコマンドで開発することも可能です�
 #### ビルド
 
 ```bash
-go build -o kubectl-local-mesh ./cmd/local-mesh
+go build -o kubectl-local-mesh .
 ```
 
 **注意**: この方法では出力先がカレントディレクトリ（`./kubectl-local-mesh`）になります。
