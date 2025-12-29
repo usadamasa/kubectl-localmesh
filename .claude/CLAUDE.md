@@ -59,135 +59,62 @@ Kubernetesサービス
    - Envoyプロセスの起動・監視
    - クリーンアップ処理
 
-## 開発コマンド
+## 開発ワークフロー
 
 このプロジェクトでは、開発タスクの実行に[Task](https://taskfile.dev)を使用します。
-Task定義は`Taskfile.yml`に記載されています。
+詳細な開発ワークフローについては、以下のskillsを参照してください。
 
-### 推奨: Taskを使った開発ワークフロー
+### 利用可能なSkills
 
-#### ビルド
+開発作業には、以下のskillsが利用できます：
+
+#### `go-taskfile-workflow` - ビルド・テスト・品質管理
+Taskfileを使った標準開発ワークフローを提供します。
+
+**主な機能**:
+- `task build`: プロジェクトビルド
+- `task test`: テスト実行
+- `task lint`: 静的解析（yamllint + golangci-lint）
+- `task format`: コードフォーマット
+- `aqua install`: 開発ツールのインストール
+
+詳細: `.claude/skills/go-taskfile-workflow/SKILL.md`
+
+#### `kubectl-envoy-debugging` - デバッグ・設定確認
+Envoy設定の確認とデバッグを支援します。
+
+**主な機能**:
+- `--dump-envoy-config`: Envoy設定のダンプ
+- `--mock-config`: オフラインモード（クラスタ接続不要）
+- `-log debug`: 詳細デバッグログ
+- Envoy設定の検証とトラブルシューティング
+
+詳細: `.claude/skills/kubectl-envoy-debugging/SKILL.md`
+
+#### `kubectl-local-mesh-operations` - 起動・運用
+kubectl-local-mesh固有の運用操作を提供します。
+
+**主な機能**:
+- サービスメッシュの起動・停止
+- `/etc/hosts`管理オプション
+- サービスへのアクセス方法（HTTP/gRPC）
+- 依存関係チェック
+- トラブルシューティング
+
+詳細: `.claude/skills/kubectl-local-mesh-operations/SKILL.md`
+
+### クイックスタート
 
 ```bash
+# 1. 依存関係チェック
+.claude/skills/kubectl-local-mesh-operations/scripts/check-dependencies.sh
+
+# 2. ビルド
 task build
-```
 
-バイナリは`bin/kubectl-local-mesh`に出力されます。
-
-#### テスト
-
-```bash
-task test
-```
-
-全パッケージのテストを実行します。
-
-現在、テストファイルは存在しませんが、将来的には以下のテスト戦略を推奨:
-- `internal/config`: YAML parsing, validation
-- `internal/kube`: kubectl command mocking
-- `internal/pf`: port allocation logic
-- `internal/envoy`: config generation
-
-#### コード品質管理
-
-**Lint (静的解析):**
-
-```bash
-task lint
-```
-
-以下のリンターを実行します:
-- `yamllint`: YAML設定ファイルの検証（`.yamllint.yaml`設定を使用）
-- `golangci-lint`: Goコードの静的解析
-
-**Format (コードフォーマット):**
-
-```bash
-task format
-```
-
-`gofmt`を使用してGoコードを自動フォーマットします。
-
-#### 利用可能なタスク一覧
-
-```bash
-task --list
-```
-
-すべてのタスクとその説明を表示します。
-
-### 直接Go CLIを使用する場合
-
-Taskを使用せず、直接Goコマンドで開発することも可能です。
-
-#### ビルド
-
-```bash
-go build -o kubectl-local-mesh .
-```
-
-**注意**: この方法では出力先がカレントディレクトリ（`./kubectl-local-mesh`）になります。
-Taskfile経由のビルドとは出力先が異なります。
-
-#### テスト
-
-```bash
-go test ./...
-```
-
-### 実行
-
-```bash
-# Task経由でビルドした場合
+# 3. 起動
 sudo ./bin/kubectl-local-mesh -f services.yaml
-
-# 直接go buildした場合
-sudo ./kubectl-local-mesh -f services.yaml
-
-# /etc/hosts更新を無効化
-./kubectl-local-mesh -f services.yaml --update-hosts=false
-
-# ログレベル指定
-sudo ./kubectl-local-mesh -f services.yaml -log debug
 ```
-
-### Envoy設定のダンプ
-
-Envoy設定をYAML形式で標準出力にダンプ:
-
-```bash
-# 基本的な使用方法（クラスタ接続が必要）
-./kubectl-local-mesh --dump-envoy-config -f services.yaml
-
-# ファイルにリダイレクト
-./kubectl-local-mesh --dump-envoy-config -f services.yaml > envoy-config.yaml
-```
-
-### オフラインモード（モック設定）
-
-Kubernetesクラスタに接続せずにEnvoy設定を確認:
-
-```bash
-# モック設定ファイルを作成
-cat > mocks.yaml <<EOF
-mocks:
-  - namespace: users
-    service: users-api
-    port_name: grpc
-    resolved_port: 50051
-  - namespace: billing
-    service: billing-api
-    port_name: http
-    resolved_port: 8080
-EOF
-
-# モック設定を使ってダンプ
-./kubectl-local-mesh --dump-envoy-config -f services.yaml --mock-config mocks.yaml
-```
-
-モック設定ファイル形式:
-- `namespace`, `service`, `port_name`でサービスを識別
-- `resolved_port`はkubectl呼び出しの代わりに使用するポート番号
 
 ## 設定ファイル形式
 
