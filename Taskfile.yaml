@@ -11,7 +11,7 @@ tasks:
   test:
     desc: Run tests
     cmds:
-      - go test ./...
+      - go test -cover ./...
 
   lint:
     desc: Run Linters

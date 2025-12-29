@@ -78,9 +78,11 @@ kubectl localmesh --help
 ### Prerequisites
 
 - `kubectl`
-- Access to a Kubernetes cluster
+- Access to a **Kubernetes 1.30+** cluster (WebSocket port-forward support required)
 - `envoy` installed locally
 - Go 1.21+ (if building from source)
+
+> **Note:** kubectl-localmesh uses WebSocket-based port-forwarding, which requires Kubernetes 1.30 or later. SPDY-based port-forwarding (used in Kubernetes 1.29 and earlier) is not supported.
 
 macOS example:
 

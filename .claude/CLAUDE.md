@@ -142,9 +142,11 @@ services:
   - `kubectl`: Kubernetesクラスタへのアクセス
   - `envoy`: ローカルプロキシとして動作（macOS: `brew install envoy`）
   - `bash`: port-forwardループスクリプト実行
+  - **Kubernetes 1.30+**: WebSocket port-forward対応が必須
 
 - **Go modules:**
   - `gopkg.in/yaml.v3`: 設定ファイルパース
+  - `k8s.io/client-go v0.35.0+`: Kubernetes client with WebSocket support
 
 - **開発ツール (aqua管理):**
   - `task`: タスクランナー（Taskfile.yaml実行）
@@ -156,6 +158,19 @@ services:
 ```bash
 aqua install
 ```
+
+### WebSocket Port-Forward
+
+**重要:** このプロジェクトは、Kubernetes 1.29+でSPDYが非推奨となったため、WebSocketベースのport-forwardを使用しています。
+
+- **最小Kubernetesバージョン**: 1.30+ (WebSocket port-forward対応)
+- **実装**: `internal/k8s/portforward.go`で`portforward.NewSPDYOverWebsocketDialer`を使用
+- **プロトコル**: WebSocket (RFC 6455) over HTTP/1.1
+- **下位互換性**: Kubernetes 1.29以前のクラスタはサポートされません
+
+参考資料:
+- [Kubernetes 1.31: WebSockets Transition](https://kubernetes.io/blog/2024/08/20/websockets-transition/)
+- [client-go portforward package](https://pkg.go.dev/k8s.io/client-go/tools/portforward)
 
 ## 重要な実装詳細
 

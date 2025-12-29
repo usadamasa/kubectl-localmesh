@@ -8,15 +8,22 @@ import (
 	"path/filepath"
 
 	"gopkg.in/yaml.v3"
+	"k8s.io/client-go/kubernetes"
 
 	"github.com/usadamasa/kubectl-localmesh/internal/config"
 	"github.com/usadamasa/kubectl-localmesh/internal/envoy"
 	"github.com/usadamasa/kubectl-localmesh/internal/hosts"
-	"github.com/usadamasa/kubectl-localmesh/internal/kube"
+	"github.com/usadamasa/kubectl-localmesh/internal/k8s"
 	"github.com/usadamasa/kubectl-localmesh/internal/pf"
 )
 
 func Run(ctx context.Context, cfg *config.Config, logLevel string, updateHosts bool) error {
+	// Kubernetes client初期化
+	clientset, restConfig, err := k8s.NewClient()
+	if err != nil {
+		return fmt.Errorf("failed to create kubernetes client: %w", err)
+	}
+
 	// /etc/hosts更新が必要な場合
 	if updateHosts {
 		// 権限チェック
@@ -53,11 +60,11 @@ func Run(ctx context.Context, cfg *config.Config, logLevel string, updateHosts b
 	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	var routes []envoy.Route
-	var procs []*exec.Cmd
 
 	for _, s := range cfg.Services {
-		remotePort, err := kube.ResolveServicePort(
+		remotePort, err := k8s.ResolveServicePort(
 			ctx,
+			clientset,
 			s.Namespace,
 			s.Service,
 			s.PortName,
@@ -83,17 +90,23 @@ func Run(ctx context.Context, cfg *config.Config, logLevel string, updateHosts b
 			localPort,
 		)
 
-		cmd, err := pf.StartPortForwardLoop(
-			ctx,
-			s.Namespace,
-			s.Service,
-			localPort,
-			remotePort,
-		)
-		if err != nil {
-			return err
-		}
-		procs = append(procs, cmd)
+		// port-forwardをgoroutineで起動（自動再接続）
+		go func(ns, svc string, local, remote int) {
+			if err := k8s.StartPortForwardLoop(
+				ctx,
+				restConfig,
+				clientset,
+				ns,
+				svc,
+				local,
+				remote,
+			); err != nil {
+				// contextキャンセル以外のエラーをログ出力
+				if ctx.Err() == nil {
+					fmt.Fprintf(os.Stderr, "port-forward error for %s/%s: %v\n", ns, svc, err)
+				}
+			}
+		}(s.Namespace, s.Service, localPort, remotePort)
 
 		routes = append(routes, envoy.Route{
 			Host:        s.Host,
@@ -126,12 +139,9 @@ func Run(ctx context.Context, cfg *config.Config, logLevel string, updateHosts b
 	envoyCmd.Stdout = os.Stdout
 	envoyCmd.Stderr = os.Stderr
 
-	err = envoyCmd.Run()
-
-	for _, p := range procs {
-		pf.Terminate(p)
-	}
-	return err
+	// Envoy実行（contextキャンセル時に自動終了）
+	// port-forwardのgoroutineもcontextキャンセル時に自動終了する
+	return envoyCmd.Run()
 }
 
 func DumpEnvoyConfig(ctx context.Context, cfg *config.Config, mockConfigPath string) error {
@@ -143,6 +153,16 @@ func DumpEnvoyConfig(ctx context.Context, cfg *config.Config, mockConfigPath str
 		mockCfg, err = config.LoadMockConfig(mockConfigPath)
 		if err != nil {
 			return fmt.Errorf("failed to load mock config: %w", err)
+		}
+	}
+
+	// モックモードでない場合はKubernetes clientを初期化
+	var clientset *kubernetes.Clientset
+	if mockCfg == nil {
+		var k8sErr error
+		clientset, _, k8sErr = k8s.NewClient()
+		if k8sErr != nil {
+			return fmt.Errorf("failed to create kubernetes client: %w", k8sErr)
 		}
 	}
 
@@ -158,9 +178,10 @@ func DumpEnvoyConfig(ctx context.Context, cfg *config.Config, mockConfigPath str
 				return err
 			}
 		} else {
-			// モック設定がない場合は通常通りkubectlで解決
-			remotePort, err = kube.ResolveServicePort(
+			// モック設定がない場合は通常通りclient-goで解決
+			remotePort, err = k8s.ResolveServicePort(
 				ctx,
+				clientset,
 				s.Namespace,
 				s.Service,
 				s.PortName,
