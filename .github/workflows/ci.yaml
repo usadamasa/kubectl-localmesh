@@ -2,10 +2,11 @@
 name: CI
 
 "on":
-  push:
+  pull_request:
+  merge_group:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -59,4 +60,4 @@ jobs:
           reporter: "github-pr-review"
           level: "warning"
           yamllint_flags: "-c .yamllint.yaml ."
-          fail_on_error: true
+          fail_level: "error"
