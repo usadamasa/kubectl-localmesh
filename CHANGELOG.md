@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.1.2](https://github.com/usadamasa/kubectl-local-mesh/compare/v0.1.1...v0.1.2) - 2025-12-29
+### Bug Fixes 🐛
+- bugfix: fix with golangci-lint by @usadamasa in https://github.com/usadamasa/kubectl-local-mesh/pull/17
+
 ## [v0.1.1](https://github.com/usadamasa/kubectl-local-mesh/compare/v0.1.0...v0.1.1) - 2025-12-28
 - setup ci by @usadamasa in https://github.com/usadamasa/kubectl-local-mesh/pull/11
 - introduce tagpr by @usadamasa in https://github.com/usadamasa/kubectl-local-mesh/pull/12
