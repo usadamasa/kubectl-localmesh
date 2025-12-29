@@ -9,8 +9,8 @@ import (
 
 var hostsFile = "/etc/hosts"
 
-const markerStart = "# kubectl-local-mesh: managed by kubectl-local-mesh"
-const markerEnd = "# kubectl-local-mesh: end"
+const markerStart = "# kubectl-localmesh: managed by kubectl-localmesh"
+const markerEnd = "# kubectl-localmesh: end"
 
 // HasPermission checks if we can write to /etc/hosts
 func HasPermission() bool {
@@ -57,7 +57,7 @@ func AddEntries(hostnames []string) error {
 	return writeLinesToFile(lines)
 }
 
-// RemoveEntries removes kubectl-local-mesh entries from /etc/hosts
+// RemoveEntries removes kubectl-localmesh entries from /etc/hosts
 func RemoveEntries() error {
 	// /etc/hostsを読み込む
 	f, err := os.Open(hostsFile)

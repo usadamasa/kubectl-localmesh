@@ -8,7 +8,7 @@
 
 version: 2
 
-project_name: kubectl-local-mesh
+project_name: kubectl-localmesh
 
 before:
   hooks:
@@ -20,8 +20,6 @@ builds:
     goos:
       - linux
       - darwin
-    main: ./cmd/kubectl-local_mesh
-    binary: "kubectl-local_mesh"
 
 archives:
   - formats: [tar.gz]

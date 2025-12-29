@@ -20,13 +20,13 @@ allowed-tools: ["Bash", "Read", "Write", "Glob"]
 生成されたEnvoy設定をYAML形式で確認:
 
 ```bash
-kubectl local-mesh --dump-envoy-config -f services.yaml
+kubectl localmesh --dump-envoy-config -f services.yaml
 
 # ファイルに保存
-kubectl local-mesh --dump-envoy-config -f services.yaml > envoy-config.yaml
+kubectl localmesh --dump-envoy-config -f services.yaml > envoy-config.yaml
 
 # または直接実行
-./kubectl-local-mesh --dump-envoy-config -f services.yaml > envoy-config.yaml
+./kubectl-localmesh --dump-envoy-config -f services.yaml > envoy-config.yaml
 ```
 
 **用途**:
@@ -53,9 +53,9 @@ mocks:
 EOF
 
 # モック設定を使ってダンプ
-kubectl local-mesh --dump-envoy-config -f services.yaml --mock-config mocks.yaml
+kubectl localmesh --dump-envoy-config -f services.yaml --mock-config mocks.yaml
 # または
-./kubectl-local-mesh --dump-envoy-config -f services.yaml --mock-config mocks.yaml
+./kubectl-localmesh --dump-envoy-config -f services.yaml --mock-config mocks.yaml
 ```
 
 **モック設定形式**:
@@ -72,9 +72,9 @@ kubectl local-mesh --dump-envoy-config -f services.yaml --mock-config mocks.yaml
 詳細なデバッグログを出力:
 
 ```bash
-sudo kubectl local-mesh -f services.yaml -log debug
+sudo kubectl localmesh -f services.yaml -log debug
 # または
-sudo ./kubectl-local-mesh -f services.yaml -log debug
+sudo ./kubectl-localmesh -f services.yaml -log debug
 ```
 
 **ログレベル**:
@@ -125,7 +125,7 @@ sudo ./kubectl-local-mesh -f services.yaml -log debug
 
 ```bash
 # 1. 設定をダンプして確認
-./kubectl-local-mesh --dump-envoy-config -f services.yaml > /tmp/envoy-config.yaml
+./kubectl-localmesh --dump-envoy-config -f services.yaml > /tmp/envoy-config.yaml
 
 # 2. Envoy設定を直接検証
 envoy --mode validate -c /tmp/envoy-config.yaml
@@ -135,7 +135,7 @@ envoy --mode validate -c /tmp/envoy-config.yaml
 
 ```bash
 # 1. デバッグログで詳細を確認
-sudo ./kubectl-local-mesh -f services.yaml -log debug
+sudo ./kubectl-localmesh -f services.yaml -log debug
 
 # 2. 別ターミナルでcurlテスト
 curl -v http://users-api.localhost/

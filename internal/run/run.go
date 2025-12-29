@@ -9,11 +9,11 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/usadamasa/kubectl-local-mesh/internal/config"
-	"github.com/usadamasa/kubectl-local-mesh/internal/envoy"
-	"github.com/usadamasa/kubectl-local-mesh/internal/hosts"
-	"github.com/usadamasa/kubectl-local-mesh/internal/kube"
-	"github.com/usadamasa/kubectl-local-mesh/internal/pf"
+	"github.com/usadamasa/kubectl-localmesh/internal/config"
+	"github.com/usadamasa/kubectl-localmesh/internal/envoy"
+	"github.com/usadamasa/kubectl-localmesh/internal/hosts"
+	"github.com/usadamasa/kubectl-localmesh/internal/kube"
+	"github.com/usadamasa/kubectl-localmesh/internal/pf"
 )
 
 func Run(ctx context.Context, cfg *config.Config, logLevel string, updateHosts bool) error {
@@ -21,7 +21,7 @@ func Run(ctx context.Context, cfg *config.Config, logLevel string, updateHosts b
 	if updateHosts {
 		// 権限チェック
 		if !hosts.HasPermission() {
-			return fmt.Errorf("need sudo: try 'sudo kubectl-local-mesh ...'")
+			return fmt.Errorf("need sudo: try 'sudo kubectl-localmesh ...'")
 		}
 
 		// ホスト名リストを収集
@@ -46,7 +46,7 @@ func Run(ctx context.Context, cfg *config.Config, logLevel string, updateHosts b
 		}()
 	}
 
-	tmpDir, err := os.MkdirTemp("", "kubectl-local-mesh-")
+	tmpDir, err := os.MkdirTemp("", "kubectl-localmesh-")
 	if err != nil {
 		return err
 	}
