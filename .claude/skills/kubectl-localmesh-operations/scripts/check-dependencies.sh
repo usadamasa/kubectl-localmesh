@@ -1,10 +1,10 @@
 #!/bin/bash
-# kubectl-local-mesh 依存関係チェックスクリプト
+# kubectl-localmesh 依存関係チェックスクリプト
 
 set -e
 
 echo "==================================="
-echo "kubectl-local-mesh 依存関係チェック"
+echo "kubectl-localmesh 依存関係チェック"
 echo "==================================="
 echo ""
 
@@ -54,7 +54,7 @@ if kubectl cluster-info &> /dev/null; then
     echo "   現在のコンテキスト: $context"
 else
     echo "⚠️  Kubernetesクラスタに接続できません"
-    echo "   kubectl-local-meshの起動時にエラーになる可能性があります"
+    echo "   kubectl-localmeshの起動時にエラーになる可能性があります"
     echo "   （オフラインモードでのEnvoy設定ダンプは可能）"
 fi
 echo ""
@@ -65,7 +65,7 @@ if [ $exit_code -eq 0 ]; then
     echo "✅ すべての依存関係が満たされています"
     echo ""
     echo "次のステップ:"
-    echo "  sudo ./bin/kubectl-local-mesh -f services.yaml"
+    echo "  sudo ./bin/kubectl-localmesh -f services.yaml"
 else
     echo "❌ 必須の依存関係が不足しています"
     echo "   上記のインストール方法を参照してください"

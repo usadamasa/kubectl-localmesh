@@ -8,8 +8,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/usadamasa/kubectl-local-mesh/internal/config"
-	"github.com/usadamasa/kubectl-local-mesh/internal/run"
+	"github.com/usadamasa/kubectl-localmesh/internal/config"
+	"github.com/usadamasa/kubectl-localmesh/internal/run"
 )
 
 func main() {
@@ -26,8 +26,8 @@ func main() {
 		*fConfig = flag.Arg(0)
 	}
 	if *fConfig == "" {
-		fmt.Fprintln(os.Stderr, "usage: kubectl-local-mesh -f services.yaml")
-		fmt.Fprintln(os.Stderr, "   or: kubectl-local-mesh services.yaml")
+		fmt.Fprintln(os.Stderr, "usage: kubectl-localmesh -f services.yaml")
+		fmt.Fprintln(os.Stderr, "   or: kubectl-localmesh services.yaml")
 		os.Exit(2)
 	}
 

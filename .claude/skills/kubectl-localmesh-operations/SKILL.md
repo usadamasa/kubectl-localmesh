@@ -1,12 +1,12 @@
 ---
-name: kubectl-local-mesh-operations
-description: kubectl-local-mesh固有の運用操作（起動、/etc/hosts管理、サービスアクセス、依存関係チェック）を提供します
+name: kubectl-localmesh-operations
+description: kubectl-localmesh固有の運用操作（起動、/etc/hosts管理、サービスアクセス、依存関係チェック）を提供します
 allowed-tools: ["Bash", "Read"]
 ---
 
-# kubectl-local-mesh 運用操作
+# kubectl-localmesh 運用操作
 
-このskillは、kubectl-local-mesh固有の運用操作を提供します。
+このskillは、kubectl-localmesh固有の運用操作を提供します。
 
 ## 提供機能
 
@@ -15,16 +15,16 @@ allowed-tools: ["Bash", "Read"]
 **kubectlプラグインとして起動（推奨、/etc/hosts自動更新あり、sudo必要）**:
 
 ```bash
-sudo kubectl local-mesh -f services.yaml
+sudo kubectl localmesh -f services.yaml
 ```
 
 **直接実行の場合**:
 ```bash
 # Task経由でビルド済み、またはgo install済み
-sudo ./bin/kubectl-local_mesh -f services.yaml
+sudo ./bin/kubectl-localmesh -f services.yaml
 
 # 直接go buildした場合
-sudo ./kubectl-local_mesh -f services.yaml
+sudo ./kubectl-localmesh -f services.yaml
 ```
 
 ### /etc/hosts管理オプション
@@ -32,9 +32,9 @@ sudo ./kubectl-local_mesh -f services.yaml
 **自動更新を無効化**:
 
 ```bash
-kubectl local-mesh -f services.yaml --update-hosts=false
+kubectl localmesh -f services.yaml --update-hosts=false
 # または
-./kubectl-local_mesh -f services.yaml --update-hosts=false
+./kubectl-localmesh -f services.yaml --update-hosts=false
 ```
 
 この場合、Hostヘッダーを手動指定:
@@ -81,7 +81,7 @@ grpcurl -plaintext -authority users-api.localhost 127.0.0.1:80 list
 **クリーンな終了を確認**:
 ```bash
 # /etc/hostsにエントリが残っていないか確認
-grep "kubectl-local-mesh" /etc/hosts
+grep "kubectl-localmesh" /etc/hosts
 
 # port-forwardプロセスが残っていないか確認
 ps aux | grep "kubectl port-forward"
@@ -96,7 +96,7 @@ ps aux | grep envoy
 
 ```bash
 # スクリプトを使用
-.claude/skills/kubectl-local-mesh-operations/scripts/check-dependencies.sh
+.claude/skills/kubectl-localmesh-operations/scripts/check-dependencies.sh
 
 # または個別に確認
 kubectl version --client
@@ -137,13 +137,13 @@ kill <PID>
 
 ```bash
 # Envoy設定をダンプ
-./kubectl-local-mesh --dump-envoy-config -f services.yaml > /tmp/envoy-config.yaml
+./kubectl-localmesh --dump-envoy-config -f services.yaml > /tmp/envoy-config.yaml
 
 # Envoy設定を検証
 envoy --mode validate -c /tmp/envoy-config.yaml
 
 # デバッグログで詳細確認
-sudo ./kubectl-local-mesh -f services.yaml -log debug
+sudo ./kubectl-localmesh -f services.yaml -log debug
 ```
 
 #### 問題: port-forward接続失敗
@@ -177,10 +177,10 @@ kubectl get nodes
 
 ```bash
 # sudo権限で実行
-sudo ./kubectl-local-mesh -f services.yaml
+sudo ./kubectl-localmesh -f services.yaml
 
 # または/etc/hosts更新を無効化
-./kubectl-local-mesh -f services.yaml --update-hosts=false
+./kubectl-localmesh -f services.yaml --update-hosts=false
 ```
 
 #### 問題: サービスにアクセスできない
@@ -188,7 +188,7 @@ sudo ./kubectl-local-mesh -f services.yaml
 **症状**: `connection refused`や`503 Service Unavailable`
 
 **解決手順**:
-1. kubectl-local-meshが起動しているか確認
+1. kubectl-localmeshが起動しているか確認
 2. port-forwardが正常に動作しているか確認
 3. Envoyログを確認
 4. curlで詳細なHTTPヘッダーを確認
@@ -230,7 +230,7 @@ curl -v http://users-api.localhost/
 
 ```bash
 # 1. 依存関係チェック
-.claude/skills/kubectl-local-mesh-operations/scripts/check-dependencies.sh
+.claude/skills/kubectl-localmesh-operations/scripts/check-dependencies.sh
 
 # 2. 設定ファイル確認
 cat services.yaml
@@ -239,14 +239,14 @@ cat services.yaml
 kubectl cluster-info
 
 # 4. 起動
-sudo ./bin/kubectl-local-mesh -f services.yaml
+sudo ./bin/kubectl-localmesh -f services.yaml
 ```
 
 ### 日常的な使用
 
 ```bash
 # 1. 起動
-sudo ./bin/kubectl-local-mesh -f services.yaml
+sudo ./bin/kubectl-localmesh -f services.yaml
 
 # 2. 別ターミナルでサービスにアクセス
 curl http://users-api.localhost/health
@@ -259,7 +259,7 @@ grpcurl -plaintext users-api.localhost list
 
 ```bash
 # 1. デバッグモードで起動
-sudo ./kubectl-local-mesh -f services.yaml -log debug
+sudo ./kubectl-localmesh -f services.yaml -log debug
 
 # 2. 問題を再現
 curl http://users-api.localhost/problematic-endpoint
@@ -268,7 +268,7 @@ curl http://users-api.localhost/problematic-endpoint
 # （標準出力に詳細なログが表示される）
 
 # 4. 必要に応じてEnvoy設定を確認
-./kubectl-local-mesh --dump-envoy-config -f services.yaml
+./kubectl-localmesh --dump-envoy-config -f services.yaml
 ```
 
 ## 参考情報

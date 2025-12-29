@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクト概要
 
-`kubectl-local-mesh`は、`kubectl port-forward`をベースにしたローカル専用の疑似サービスメッシュツールです。複数のKubernetesサービスに対して、単一のローカルエントリポイントからホストベースのルーティング（HTTP/gRPC）でアクセスできます。
+`kubectl-localmesh`は、`kubectl port-forward`をベースにしたローカル専用の疑似サービスメッシュツールです。複数のKubernetesサービスに対して、単一のローカルエントリポイントからホストベースのルーティング（HTTP/gRPC）でアクセスできます。
 
 **重要な設計原則:**
 - クラスタ側には何もインストールしない（kubectl primitives only）
@@ -91,8 +91,8 @@ Envoy設定の確認とデバッグを支援します。
 
 詳細: `.claude/skills/kubectl-envoy-debugging/SKILL.md`
 
-#### `kubectl-local-mesh-operations` - 起動・運用
-kubectl-local-mesh固有の運用操作を提供します。
+#### `kubectl-localmesh-operations` - 起動・運用
+kubectl-localmesh固有の運用操作を提供します。
 
 **主な機能**:
 - サービスメッシュの起動・停止
@@ -101,21 +101,21 @@ kubectl-local-mesh固有の運用操作を提供します。
 - 依存関係チェック
 - トラブルシューティング
 
-詳細: `.claude/skills/kubectl-local-mesh-operations/SKILL.md`
+詳細: `.claude/skills/kubectl-localmesh-operations/SKILL.md`
 
 ### クイックスタート
 
 ```bash
 # 1. 依存関係チェック
-.claude/skills/kubectl-local-mesh-operations/scripts/check-dependencies.sh
+.claude/skills/kubectl-localmesh-operations/scripts/check-dependencies.sh
 
 # 2. ビルド
 task build
 
 # 3. 起動
-sudo kubectl local-mesh -f services.yaml
+sudo kubectl localmesh -f services.yaml
 # または
-sudo ./bin/kubectl-local_mesh -f services.yaml
+sudo ./bin/kubectl-localmesh -f services.yaml
 ```
 
 ## 設定ファイル形式
@@ -147,7 +147,7 @@ services:
   - `gopkg.in/yaml.v3`: 設定ファイルパース
 
 - **開発ツール (aqua管理):**
-  - `task`: タスクランナー（Taskfile.yml実行）
+  - `task`: タスクランナー（Taskfile.yaml実行）
   - `golangci-lint`: Go静的解析ツール
   - `goreleaser`: リリース自動化ツール
 
@@ -179,7 +179,7 @@ done
 
 ### クリーンアップ
 
-- `run.Run()`は一時ディレクトリ（`kubectl-local-mesh-*`）を作成し、終了時に削除
+- `run.Run()`は一時ディレクトリ（`kubectl-localmesh-*`）を作成し、終了時に削除
 - すべてのport-forwardプロセスは`ctx`のキャンセルで停止
 - Envoyプロセスも`CommandContext`で管理
 
@@ -188,10 +188,10 @@ done
 `internal/hosts/hosts.go`でマーカーコメントを使用した安全な管理:
 
 ```
-# kubectl-local-mesh: managed by kubectl-local-mesh
+# kubectl-localmesh: managed by kubectl-localmesh
 127.0.0.1 users-api.localhost
 127.0.0.1 billing-api.localhost
-# kubectl-local-mesh: end
+# kubectl-localmesh: end
 ```
 
 - `--update-hosts`フラグのデフォルトは`true`

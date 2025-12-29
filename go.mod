@@ -1,4 +1,4 @@
-module github.com/usadamasa/kubectl-local-mesh
+module github.com/usadamasa/kubectl-localmesh
 
 go 1.25.5
 
