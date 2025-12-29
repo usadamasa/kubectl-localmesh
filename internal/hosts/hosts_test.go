@@ -40,10 +40,10 @@ func TestAddEntries_EmptyFile(t *testing.T) {
 	}
 
 	// 期待される内容:
-	// # kubectl-local-mesh: managed by kubectl-local-mesh
+	// # kubectl-localmesh: managed by kubectl-localmesh
 	// 127.0.0.1 test.localhost
 	// 127.0.0.1 api.localhost
-	// # kubectl-local-mesh: end
+	// # kubectl-localmesh: end
 	// (最後に1つの改行)
 
 	expected := markerStart + "\n" +
@@ -83,9 +83,9 @@ func TestAddEntries_ExistingContent(t *testing.T) {
 	// 127.0.0.1 localhost
 	// ::1 localhost
 	// (空行)
-	// # kubectl-local-mesh: managed by kubectl-local-mesh
+	// # kubectl-localmesh: managed by kubectl-localmesh
 	// 127.0.0.1 test.localhost
-	// # kubectl-local-mesh: end
+	// # kubectl-localmesh: end
 	// (最後に1つの改行)
 
 	expected := "127.0.0.1 localhost\n" +

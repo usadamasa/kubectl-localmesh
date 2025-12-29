@@ -6,7 +6,7 @@ tasks:
   build:
     desc: Build the project
     cmds:
-      - go build -o bin/kubectl-local_mesh cmd/kubectl-local_mesh/main.go
+      - go build -o bin/kubectl-localmesh main.go
 
   test:
     desc: Run tests
@@ -16,7 +16,7 @@ tasks:
   lint:
     desc: Run Linters
     cmds:
-      - yamllint -c .yamllint.yml .
+      - yamllint -c .yamllint.yaml .
       - golangci-lint run
 
   format:

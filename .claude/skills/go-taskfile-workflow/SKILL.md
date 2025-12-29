@@ -6,12 +6,12 @@ allowed-tools: ["Bash", "Read", "Glob", "Grep"]
 
 # Go Taskfile Workflow
 
-このskillは、Taskfile.ymlを使ったGoプロジェクトの標準開発ワークフローを提供します。
+このskillは、Taskfile.yamlを使ったGoプロジェクトの標準開発ワークフローを提供します。
 
 ## 対象プロジェクト
 
 - Go言語プロジェクト
-- Taskfile.ymlでビルド・テスト・Lintを管理
+- Taskfile.yamlでビルド・テスト・Lintを管理
 - aquaで開発ツールを管理（オプション）
 
 ## 提供機能
@@ -110,7 +110,7 @@ task --list
 aqua install
 
 # またはTaskfileが存在しない場合
-ls Taskfile.yml
+ls Taskfile.yaml
 ```
 
 ### ビルドエラー
@@ -136,5 +136,5 @@ task lint
 
 ## 関連ドキュメント
 
-- プロジェクトのTaskfile.yml: タスク定義の詳細
+- プロジェクトのTaskfile.yaml: タスク定義の詳細
 - プロジェクトのCLAUDE.md: アーキテクチャと実装詳細

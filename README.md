@@ -1,6 +1,6 @@
-# kubectl-local-mesh
+# kubectl-localmesh
 
-`kubectl-local-mesh` is a **local-only pseudo service mesh** built on top of `kubectl port-forward`.
+`kubectl-localmesh` is a **local-only pseudo service mesh** built on top of `kubectl port-forward`.
 
 It lets you access multiple Kubernetes Services across namespaces through a single local entrypoint, with host-based routing for both HTTP and gRPC, without installing anything into your cluster.
 
@@ -18,7 +18,7 @@ If you have ever done this:
 
 This tool smooths that out.
 
-`kubectl-local-mesh` provides an **ingress/gateway-like experience**, but:
+`kubectl-localmesh` provides an **ingress/gateway-like experience**, but:
 
 - No Ingress
 - No Service Mesh
@@ -71,8 +71,8 @@ v
 ## Installation
 
 ```sh
-go install github.com/jpeach/kubectl-local-mesh@latest
-kubectl local-mesh --help
+go install github.com/jpeach/kubectl-localmesh@latest
+kubectl localmesh --help
 ```
 
 ### Prerequisites
@@ -125,22 +125,22 @@ Notes:
 
 ### Run
 
-By default, kubectl-local-mesh automatically updates `/etc/hosts`, which requires sudo:
+By default, kubectl-localmesh automatically updates `/etc/hosts`, which requires sudo:
 
 ```bash
-sudo kubectl local-mesh -f services.yaml
+sudo kubectl localmesh -f services.yaml
 ```
 
 Or directly:
 
 ```bash
-sudo kubectl-local-mesh services.yaml
+sudo kubectl-localmesh services.yaml
 ```
 
 To disable automatic `/etc/hosts` update:
 
 ```bash
-kubectl local-mesh -f services.yaml --update-hosts=false
+kubectl localmesh -f services.yaml --update-hosts=false
 ```
 
 Example output:
@@ -150,7 +150,7 @@ Example output:
 pf: users-api.localhost -> users/users-api:50051 via 127.0.0.1:43127
 pf: billing-api.localhost -> billing/billing-api:8080 via 127.0.0.1:51234
 
-envoy config: /tmp/kubectl-local-mesh-XXXXXX/envoy.yaml
+envoy config: /tmp/kubectl-localmesh-XXXXXX/envoy.yaml
 listen: 0.0.0.0:80
 ```
 
@@ -177,12 +177,12 @@ gRPC notes
 
 ### /etc/hosts Automatic Management
 
-By default, kubectl-local-mesh automatically updates `/etc/hosts` to enable simple hostname-based access without specifying the Host header.
+By default, kubectl-localmesh automatically updates `/etc/hosts` to enable simple hostname-based access without specifying the Host header.
 
 **Default behavior (requires sudo):**
 
 ```bash
-sudo kubectl local-mesh -f services.yaml
+sudo kubectl localmesh -f services.yaml
 ```
 
 This automatically adds entries like:
@@ -195,7 +195,7 @@ This automatically adds entries like:
 **Disable automatic /etc/hosts update:**
 
 ```bash
-kubectl local-mesh -f services.yaml --update-hosts=false
+kubectl localmesh -f services.yaml --update-hosts=false
 
 # In this case, you need to specify the Host header manually:
 curl -H "Host: users-api.localhost" http://127.0.0.1:80/
@@ -203,7 +203,7 @@ curl -H "Host: users-api.localhost" http://127.0.0.1:80/
 
 **Cleanup:**
 
-When you stop kubectl-local-mesh (Ctrl+C), it automatically removes the managed entries from /etc/hosts.
+When you stop kubectl-localmesh (Ctrl+C), it automatically removes the managed entries from /etc/hosts.
 
 ### Advanced Usage
 
@@ -212,7 +212,7 @@ When you stop kubectl-local-mesh (Ctrl+C), it automatically removes the managed 
 You can dump the generated Envoy configuration to stdout for debugging or inspection:
 
 ```bash
-kubectl local-mesh --dump-envoy-config -f services.yaml
+kubectl localmesh --dump-envoy-config -f services.yaml
 ```
 
 This is useful for:
@@ -243,7 +243,7 @@ mocks:
 EOF
 
 # Dump config using mocks (no cluster connection required)
-kubectl local-mesh --dump-envoy-config -f services.yaml --mock-config mocks.yaml
+kubectl localmesh --dump-envoy-config -f services.yaml --mock-config mocks.yaml
 ```
 
 This is useful for:
@@ -291,7 +291,7 @@ Roadmap ideas
 
 Naming
 
-kubectl-local-mesh means:
+kubectl-localmesh means:
 
 - kubectl: kubectl-native workflow
 - local: strictly local execution
