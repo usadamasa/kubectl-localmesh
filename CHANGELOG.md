@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.1.3](https://github.com/usadamasa/kubectl-local-mesh/compare/v0.1.2...v0.1.3) - 2025-12-29
+### Bug Fixes 🐛
+- fix: /etc/hostsの空行累積問題を修正 by @usadamasa in https://github.com/usadamasa/kubectl-local-mesh/pull/28
+- adopt kubectl plugin naming by @usadamasa in https://github.com/usadamasa/kubectl-local-mesh/pull/29
+
 ## [v0.1.2](https://github.com/usadamasa/kubectl-local-mesh/compare/v0.1.1...v0.1.2) - 2025-12-29
 ### Bug Fixes 🐛
 - bugfix: fix with golangci-lint by @usadamasa in https://github.com/usadamasa/kubectl-local-mesh/pull/17
