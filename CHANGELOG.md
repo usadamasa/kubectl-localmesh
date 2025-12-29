@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.1.4](https://github.com/usadamasa/kubectl-local-mesh/compare/v0.1.3...v0.1.4) - 2025-12-29
+### Other Changes
+- now by @usadamasa in https://github.com/usadamasa/kubectl-local-mesh/pull/30
+
 ## [v0.1.3](https://github.com/usadamasa/kubectl-local-mesh/compare/v0.1.2...v0.1.3) - 2025-12-29
 ### Bug Fixes 🐛
 - fix: /etc/hostsの空行累積問題を修正 by @usadamasa in https://github.com/usadamasa/kubectl-local-mesh/pull/28
