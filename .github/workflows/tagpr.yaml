@@ -17,6 +17,7 @@ jobs:
       contents: write
       pull-requests: write
       issues: read
+      packages: write
 
     steps:
       - uses: actions/checkout@v6
@@ -31,5 +32,21 @@ jobs:
           private-key: ${{ secrets.TAGPR_PRIVATE_KEY }}
 
       - uses: Songmu/tagpr@v1
+        id: tagpr
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: 1.25
+
+      - name: "Release"
+        uses: goreleaser/goreleaser-action@v6
+        if: "steps.tagpr.outputs.tag != ''"
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
