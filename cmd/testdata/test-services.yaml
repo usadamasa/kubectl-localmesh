@@ -1,0 +1,7 @@
+listener_port: 8080
+services:
+  - host: test-api.localhost
+    namespace: test
+    service: test-api
+    port: 8080
+    type: http

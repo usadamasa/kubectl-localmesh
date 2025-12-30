@@ -130,20 +130,26 @@ Notes:
 By default, kubectl-localmesh automatically updates `/etc/hosts`, which requires sudo:
 
 ```bash
-sudo kubectl localmesh -f services.yaml
+sudo kubectl localmesh up -f services.yaml
 ```
 
-Or directly:
+Or use positional argument:
 
 ```bash
-sudo kubectl-localmesh services.yaml
+sudo kubectl localmesh up services.yaml
 ```
 
 To disable automatic `/etc/hosts` update:
 
 ```bash
-kubectl localmesh -f services.yaml --update-hosts=false
+kubectl localmesh up -f services.yaml --update-hosts=false
 ```
+
+### Subcommands
+
+- `up`: Start the local service mesh
+- `down`: Stop the running mesh (planned)
+- `status`: Show mesh status (planned)
 
 Example output:
 
@@ -184,7 +190,7 @@ By default, kubectl-localmesh automatically updates `/etc/hosts` to enable simpl
 **Default behavior (requires sudo):**
 
 ```bash
-sudo kubectl localmesh -f services.yaml
+sudo kubectl localmesh up -f services.yaml
 ```
 
 This automatically adds entries like:
@@ -197,7 +203,7 @@ This automatically adds entries like:
 **Disable automatic /etc/hosts update:**
 
 ```bash
-kubectl localmesh -f services.yaml --update-hosts=false
+kubectl localmesh up -f services.yaml --update-hosts=false
 
 # In this case, you need to specify the Host header manually:
 curl -H "Host: users-api.localhost" http://127.0.0.1:80/
@@ -214,7 +220,7 @@ When you stop kubectl-localmesh (Ctrl+C), it automatically removes the managed e
 You can dump the generated Envoy configuration to stdout for debugging or inspection:
 
 ```bash
-kubectl localmesh --dump-envoy-config -f services.yaml
+kubectl localmesh up -f services.yaml --dump-envoy-config
 ```
 
 This is useful for:
@@ -245,7 +251,7 @@ mocks:
 EOF
 
 # Dump config using mocks (no cluster connection required)
-kubectl localmesh --dump-envoy-config -f services.yaml --mock-config mocks.yaml
+kubectl localmesh up -f services.yaml --dump-envoy-config --mock-config mocks.yaml
 ```
 
 This is useful for:
@@ -282,7 +288,7 @@ Design philosophy
 Roadmap ideas
 
 - krew distribution
-- Subcommands (up, down, status)
+- ✅ Subcommands (`up` implemented, `down` and `status` planned)
 - TLS support via local certificates
 - gRPC-web support
 - Envoy-less HTTP-only mode

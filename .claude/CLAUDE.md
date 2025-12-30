@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `kubectl-localmesh`は、`kubectl port-forward`をベースにしたローカル専用の疑似サービスメッシュツールです。複数のKubernetesサービスに対して、単一のローカルエントリポイントからホストベースのルーティング（HTTP/gRPC）でアクセスできます。
 
+**CLIフレームワーク:** [Cobra](https://github.com/spf13/cobra)を使用したサブコマンド構造
+
 **重要な設計原則:**
 - クラスタ側には何もインストールしない（kubectl primitives only）
 - ローカル開発・デバッグ専用（本番環境は対象外）
@@ -26,33 +28,40 @@ Kubernetesサービス
 
 ### 主要コンポーネント
 
-1. **config** (`internal/config/`)
+1. **cmd** (`cmd/`)
+   - Cobraベースのサブコマンド実装
+   - `root.go`: ルートコマンド定義
+   - `up.go`: サービスメッシュ起動（upサブコマンド）
+   - (将来) `down.go`: サービスメッシュ停止
+   - (将来) `status.go`: ステータス表示
+
+2. **config** (`internal/config/`)
    - YAMLベースの設定ファイル読み込み
    - `listener_port`: Envoyが待ち受けるローカルポート（デフォルト: 80）
    - `services`: ルーティング対象のサービス一覧（host, namespace, service, port/port_name, type）
 
-2. **kube** (`internal/kube/`)
+3. **kube** (`internal/kube/`)
    - `kubectl`コマンドのラッパー
    - サービスのポート解決（port_name指定またはports[0]をフォールバック）
    - JSONPathを使ったService定義の取得
 
-3. **pf** (`internal/pf/`)
+4. **pf** (`internal/pf/`)
    - `kubectl port-forward`のライフサイクル管理
    - 自動再接続ループ（bashスクリプト経由）
    - 動的なローカルポート割り当て（`FreeLocalPort`）
 
-4. **envoy** (`internal/envoy/`)
+5. **envoy** (`internal/envoy/`)
    - Envoy設定ファイル（YAML）の動的生成
    - HTTP/2対応（h2c plaintext for gRPC）
    - ホストベースのvirtual_hosts設定
    - 各サービスへのSTATICクラスタ定義
 
-5. **hosts** (`internal/hosts/`)
+6. **hosts** (`internal/hosts/`)
    - /etc/hosts ファイルの管理
    - マーカーコメントによるエントリの追跡・削除
    - 書き込み権限チェック
 
-6. **run** (`internal/run/`)
+7. **run** (`internal/run/`)
    - オーケストレーションロジック
    - 各サービスに対してport-forwardプロセスを起動
    - Envoy設定を生成・適用
@@ -113,9 +122,11 @@ kubectl-localmesh固有の運用操作を提供します。
 task build
 
 # 3. 起動
-sudo kubectl localmesh -f services.yaml
+sudo kubectl-localmesh up -f services.yaml
 # または
-sudo ./bin/kubectl-localmesh -f services.yaml
+sudo ./bin/kubectl-localmesh up -f services.yaml
+# 位置引数も使用可能
+sudo kubectl-localmesh up services.yaml
 ```
 
 ## 設定ファイル形式
@@ -228,7 +239,7 @@ done
 
 READMEに記載されているロードマップ:
 - krew配布
-- サブコマンド（up, down, status）
+- ✅ サブコマンド（`up`実装済み、`down`と`status`は計画中）
 - TLS対応（ローカル証明書）
 - gRPC-web対応
 - Envoy不要のHTTP専用モード
