@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.1.6](https://github.com/usadamasa/kubectl-localmesh/compare/v0.1.5...v0.1.6) - 2025-12-30
+### Bug Fixes 🐛
+- Bugfix/handle invalid hosts by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/41
+### Other Changes
+- migrate to kubernetes/client-go from kubectl by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/36
+
 ## [v0.1.5](https://github.com/usadamasa/kubectl-localmesh/compare/v0.1.4...v0.1.5) - 2025-12-29
 ### Breaking Changes 🛠
 - refactor: rename project from kubectl-local-mesh to kubectl-localmesh by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/33
