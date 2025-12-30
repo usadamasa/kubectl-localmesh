@@ -30,8 +30,9 @@ Kubernetesサービス
 
 1. **cmd** (`cmd/`)
    - Cobraベースのサブコマンド実装
-   - `root.go`: ルートコマンド定義
+   - `root.go`: ルートコマンド定義（グローバルフラグ: `--log-level`）
    - `up.go`: サービスメッシュ起動（upサブコマンド）
+   - `dump_envoy_config.go`: Envoy設定のダンプ（dump-envoy-configサブコマンド）
    - (将来) `down.go`: サービスメッシュ停止
    - (将来) `status.go`: ステータス表示
 
@@ -93,9 +94,9 @@ Taskfileを使った標準開発ワークフローを提供します。
 Envoy設定の確認とデバッグを支援します。
 
 **主な機能**:
-- `--dump-envoy-config`: Envoy設定のダンプ
-- `--mock-config`: オフラインモード（クラスタ接続不要）
-- `-log debug`: 詳細デバッグログ
+- `dump-envoy-config`: Envoy設定のダンプ（サブコマンド）
+- `--mock-config`: オフラインモード（クラスタ接続不要、dump-envoy-configのオプション）
+- `--log-level debug`: 詳細デバッグログ（グローバルフラグ）
 - Envoy設定の検証とトラブルシューティング
 
 詳細: `.claude/skills/kubectl-envoy-debugging/SKILL.md`
@@ -221,10 +222,10 @@ done
 ```
 
 **基本動作:**
-- `--update-hosts`フラグのデフォルトは`true`
+- デフォルトでは/etc/hostsを自動的に更新（`--no-edit-hosts`でスキップ可能）
 - 通常起動時は自動的に/etc/hostsを更新（sudo必要）
 - 終了時（Ctrl+C）に自動クリーンアップ
-- `--dump-envoy-config`モードでは更新しない
+- `dump-envoy-config`サブコマンドでは更新しない
 - 一時ファイル経由で安全に書き換え
 
 **保守的な編集ポリシー（重要）:**
@@ -239,7 +240,7 @@ done
 
 READMEに記載されているロードマップ:
 - krew配布
-- ✅ サブコマンド（`up`実装済み、`down`と`status`は計画中）
+- ✅ サブコマンド（`up`と`dump-envoy-config`実装済み、`down`と`status`は計画中）
 - TLS対応（ローカル証明書）
 - gRPC-web対応
 - Envoy不要のHTTP専用モード

@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"strings"
@@ -86,54 +85,23 @@ func TestUpCommand_FlagParsing(t *testing.T) {
 	}
 }
 
-func TestUpCommand_DumpEnvoyConfig(t *testing.T) {
-	// upOptsをリセット
-	upOpts = &upOptions{}
 
-	cmd := &cobra.Command{
-		Use: "test",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-		},
-	}
 
-	cmd.Flags().StringVarP(&upOpts.configFile, "config", "f", "", "config yaml path")
-	cmd.Flags().BoolVar(&upOpts.dumpConfig, "dump-envoy-config", false, "dump envoy config")
-	cmd.SetArgs([]string{"-f", "testdata/test-services.yaml", "--dump-envoy-config"})
-
-	var buf bytes.Buffer
-	cmd.SetOut(&buf)
-
-	err := cmd.Execute()
-	if err != nil {
-		t.Errorf("Execute() error = %v", err)
-	}
-
-	if !upOpts.dumpConfig {
-		t.Errorf("dumpConfig should be true")
-	}
-}
-
-func TestUpCommand_LogLevel(t *testing.T) {
+func TestUpCommand_NoEditHosts(t *testing.T) {
 	tests := []struct {
-		name         string
-		args         []string
-		wantLogLevel string
+		name          string
+		args          []string
+		wantEditHosts bool
 	}{
 		{
-			name:         "デフォルトログレベル",
-			args:         []string{"-f", "testdata/test-services.yaml"},
-			wantLogLevel: "info",
+			name:          "デフォルト（hosts編集する）",
+			args:          []string{"-f", "testdata/test-services.yaml"},
+			wantEditHosts: true,
 		},
 		{
-			name:         "debugログレベル",
-			args:         []string{"-f", "testdata/test-services.yaml", "--log-level", "debug"},
-			wantLogLevel: "debug",
-		},
-		{
-			name:         "warnログレベル",
-			args:         []string{"-f", "testdata/test-services.yaml", "--log-level", "warn"},
-			wantLogLevel: "warn",
+			name:          "--no-edit-hostsでスキップ",
+			args:          []string{"-f", "testdata/test-services.yaml", "--no-edit-hosts"},
+			wantEditHosts: false,
 		},
 	}
 
@@ -141,7 +109,7 @@ func TestUpCommand_LogLevel(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// upOptsをリセット
 			upOpts = &upOptions{
-				logLevel: "info", // デフォルト値
+				noEditHosts: false, // デフォルト値
 			}
 
 			cmd := &cobra.Command{
@@ -155,7 +123,7 @@ func TestUpCommand_LogLevel(t *testing.T) {
 			}
 
 			cmd.Flags().StringVarP(&upOpts.configFile, "config", "f", "", "config yaml path")
-			cmd.Flags().StringVar(&upOpts.logLevel, "log-level", "info", "log level")
+			cmd.Flags().BoolVar(&upOpts.noEditHosts, "no-edit-hosts", false, "skip updating /etc/hosts")
 			cmd.SetArgs(tt.args)
 
 			err := cmd.Execute()
@@ -163,64 +131,10 @@ func TestUpCommand_LogLevel(t *testing.T) {
 				t.Errorf("Execute() error = %v", err)
 			}
 
-			if upOpts.logLevel != tt.wantLogLevel {
-				t.Errorf("logLevel = %v, want %v", upOpts.logLevel, tt.wantLogLevel)
-			}
-		})
-	}
-}
-
-func TestUpCommand_UpdateHosts(t *testing.T) {
-	tests := []struct {
-		name            string
-		args            []string
-		wantUpdateHosts bool
-	}{
-		{
-			name:            "デフォルト（true）",
-			args:            []string{"-f", "testdata/test-services.yaml"},
-			wantUpdateHosts: true,
-		},
-		{
-			name:            "明示的にfalse",
-			args:            []string{"-f", "testdata/test-services.yaml", "--update-hosts=false"},
-			wantUpdateHosts: false,
-		},
-		{
-			name:            "明示的にtrue",
-			args:            []string{"-f", "testdata/test-services.yaml", "--update-hosts=true"},
-			wantUpdateHosts: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// upOptsをリセット
-			upOpts = &upOptions{
-				updateHosts: true, // デフォルト値
-			}
-
-			cmd := &cobra.Command{
-				Use: "test",
-				RunE: func(cmd *cobra.Command, args []string) error {
-					if upOpts.configFile == "" && len(args) > 0 {
-						upOpts.configFile = args[0]
-					}
-					return nil
-				},
-			}
-
-			cmd.Flags().StringVarP(&upOpts.configFile, "config", "f", "", "config yaml path")
-			cmd.Flags().BoolVar(&upOpts.updateHosts, "update-hosts", true, "update /etc/hosts")
-			cmd.SetArgs(tt.args)
-
-			err := cmd.Execute()
-			if err != nil {
-				t.Errorf("Execute() error = %v", err)
-			}
-
-			if upOpts.updateHosts != tt.wantUpdateHosts {
-				t.Errorf("updateHosts = %v, want %v", upOpts.updateHosts, tt.wantUpdateHosts)
+			// 論理反転の確認
+			actualEditHosts := !upOpts.noEditHosts
+			if actualEditHosts != tt.wantEditHosts {
+				t.Errorf("editHosts = %v, want %v", actualEditHosts, tt.wantEditHosts)
 			}
 		})
 	}

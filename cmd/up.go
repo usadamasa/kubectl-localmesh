@@ -13,10 +13,7 @@ import (
 
 type upOptions struct {
 	configFile  string
-	logLevel    string
-	dumpConfig  bool
-	mockConfig  string
-	updateHosts bool
+	noEditHosts bool
 }
 
 var upOpts = &upOptions{}
@@ -30,7 +27,7 @@ and run a local Envoy proxy for host-based routing.
 Examples:
   kubectl-localmesh up -f services.yaml
   kubectl-localmesh up services.yaml
-  kubectl-localmesh up -f services.yaml --dump-envoy-config`,
+  kubectl-localmesh up -f services.yaml --no-edit-hosts`,
 	RunE: runUp,
 }
 
@@ -38,10 +35,7 @@ func init() {
 	rootCmd.AddCommand(upCmd)
 
 	upCmd.Flags().StringVarP(&upOpts.configFile, "config", "f", "", "config yaml path")
-	upCmd.Flags().StringVar(&upOpts.logLevel, "log-level", "info", "log level: debug|info|warn")
-	upCmd.Flags().BoolVar(&upOpts.dumpConfig, "dump-envoy-config", false, "dump envoy config to stdout and exit")
-	upCmd.Flags().StringVar(&upOpts.mockConfig, "mock-config", "", "mock config for offline mode (works with --dump-envoy-config)")
-	upCmd.Flags().BoolVar(&upOpts.updateHosts, "update-hosts", true, "update /etc/hosts (requires sudo)")
+	upCmd.Flags().BoolVar(&upOpts.noEditHosts, "no-edit-hosts", false, "skip updating /etc/hosts")
 }
 
 func runUp(cmd *cobra.Command, args []string) error {
@@ -62,14 +56,12 @@ func runUp(cmd *cobra.Command, args []string) error {
 
 	ctx := cmd.Context()
 
-	// --dump-envoy-configモード
-	if upOpts.dumpConfig {
-		return run.DumpEnvoyConfig(ctx, cfg, upOpts.mockConfig)
-	}
-
-	// メインモード: シグナルハンドリング + run.Run()
+	// シグナルハンドリング
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
-	return run.Run(ctx, cfg, upOpts.logLevel, upOpts.updateHosts)
+	// 論理反転: noEditHosts=false → updateHosts=true
+	updateHosts := !upOpts.noEditHosts
+
+	return run.Run(ctx, cfg, globalLogLevel, updateHosts)
 }

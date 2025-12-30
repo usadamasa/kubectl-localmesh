@@ -142,14 +142,29 @@ sudo kubectl localmesh up services.yaml
 To disable automatic `/etc/hosts` update:
 
 ```bash
-kubectl localmesh up -f services.yaml --update-hosts=false
+kubectl localmesh up -f services.yaml --no-edit-hosts
 ```
 
 ### Subcommands
 
 - `up`: Start the local service mesh
+- `dump-envoy-config`: Dump Envoy configuration to stdout
 - `down`: Stop the running mesh (planned)
 - `status`: Show mesh status (planned)
+
+### Global Flags
+
+The following flags are available for all subcommands:
+
+- `--log-level string`: Log level for Envoy and internal operations (debug|info|warn, default: info)
+
+Examples:
+
+```bash
+# Debug mode for all subcommands
+kubectl localmesh --log-level debug up -f services.yaml
+kubectl localmesh --log-level debug dump-envoy-config -f services.yaml
+```
 
 Example output:
 
@@ -203,7 +218,7 @@ This automatically adds entries like:
 **Disable automatic /etc/hosts update:**
 
 ```bash
-kubectl localmesh up -f services.yaml --update-hosts=false
+kubectl localmesh up -f services.yaml --no-edit-hosts
 
 # In this case, you need to specify the Host header manually:
 curl -H "Host: users-api.localhost" http://127.0.0.1:80/
@@ -220,7 +235,7 @@ When you stop kubectl-localmesh (Ctrl+C), it automatically removes the managed e
 You can dump the generated Envoy configuration to stdout for debugging or inspection:
 
 ```bash
-kubectl localmesh up -f services.yaml --dump-envoy-config
+kubectl localmesh dump-envoy-config -f services.yaml
 ```
 
 This is useful for:
@@ -251,7 +266,7 @@ mocks:
 EOF
 
 # Dump config using mocks (no cluster connection required)
-kubectl localmesh up -f services.yaml --dump-envoy-config --mock-config mocks.yaml
+kubectl localmesh dump-envoy-config -f services.yaml --mock-config mocks.yaml
 ```
 
 This is useful for:
