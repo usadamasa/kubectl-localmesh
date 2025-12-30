@@ -200,7 +200,7 @@ done
 
 ### /etc/hosts自動管理
 
-`internal/hosts/hosts.go`でマーカーコメントを使用した安全な管理:
+`internal/hosts/hosts.go`および`internal/hosts/validate.go`でマーカーコメントを使用した安全な管理:
 
 ```
 # kubectl-localmesh: managed by kubectl-localmesh
@@ -209,11 +209,20 @@ done
 # kubectl-localmesh: end
 ```
 
+**基本動作:**
 - `--update-hosts`フラグのデフォルトは`true`
 - 通常起動時は自動的に/etc/hostsを更新（sudo必要）
 - 終了時（Ctrl+C）に自動クリーンアップ
 - `--dump-envoy-config`モードでは更新しない
 - 一時ファイル経由で安全に書き換え
+
+**保守的な編集ポリシー（重要）:**
+- **無効状態を検出したら自動修復しない** - ユーザーに手動修正を要求
+- マーカーブロックが既に存在する場合は起動を拒否（二重起動防止）
+- 未完結ブロック、孤立した終了マーカー、ネストしたマーカーを検出
+- エラーメッセージで具体的な問題（行番号付き）と修正手順を提示
+- `/etc/hosts`の全内容をダンプして問題箇所を明示
+- validation型は全てpackage private（内部実装の詳細）
 
 ## 今後の拡張
 

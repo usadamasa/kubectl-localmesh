@@ -25,12 +25,18 @@ func HasPermission() bool {
 
 // AddEntries adds hostname entries to /etc/hosts
 func AddEntries(hostnames []string) error {
-	// 既存のエントリを削除（古いエントリがあれば）
-	if err := RemoveEntries(); err != nil {
-		return fmt.Errorf("failed to clean up old entries: %w", err)
+	// 1. ファイル状態を検証
+	state, err := validateHostsFile()
+	if err != nil {
+		return fmt.Errorf("failed to validate /etc/hosts: %w", err)
 	}
 
-	// 現在のファイル内容を読み込み、正規化
+	// 2. 無効状態の場合はエラーを返す
+	if !state.isValid {
+		return newHostsFileCorruptedError(state)
+	}
+
+	// 3. 現在のファイル内容を読み込み、正規化
 	lines, err := readAndNormalizeFile()
 	if err != nil {
 		return err
