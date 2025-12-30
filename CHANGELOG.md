@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.1.7](https://github.com/usadamasa/kubectl-localmesh/compare/v0.1.6...v0.1.7) - 2025-12-30
+### New Features 🎉
+- feat: introduce Cobra-based subcommand structure with 'up' command by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/42
+- refactor: reorganize CLI options and introduce dump-envoy-config subcommand by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/45
+
 ## [v0.1.6](https://github.com/usadamasa/kubectl-localmesh/compare/v0.1.5...v0.1.6) - 2025-12-30
 ### Bug Fixes 🐛
 - Bugfix/handle invalid hosts by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/41
