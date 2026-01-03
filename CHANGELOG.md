@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.2.0](https://github.com/usadamasa/kubectl-localmesh/compare/v0.1.7...v0.2.0) - 2026-01-03
+### New Features 🎉
+- support db via bastion by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/46
+
 ## [v0.2.0](https://github.com/usadamasa/kubectl-localmesh/compare/v0.1.7...v0.2.0)
 
 ### Breaking Changes 🛠
