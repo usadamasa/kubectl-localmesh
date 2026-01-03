@@ -72,7 +72,7 @@ v
 ## Installation
 
 ```sh
-go install github.com/jpeach/kubectl-localmesh@latest
+go install github.com/usadamasa/kubectl-localmesh@latest
 kubectl localmesh --help
 ```
 
