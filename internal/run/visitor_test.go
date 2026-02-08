@@ -13,7 +13,7 @@ func TestRunVisitor_Creation(t *testing.T) {
 	ctx := context.Background()
 	cfg := &config.Config{}
 
-	visitor := NewRunVisitor(ctx, cfg, log.New("info"))
+	visitor := NewRunVisitor(ctx, cfg, log.New("info"), false)
 
 	if visitor == nil {
 		t.Fatal("expected visitor to be created")
