@@ -25,10 +25,11 @@ type k8sClientEntry struct {
 
 // RunVisitor は Run() 処理のための Visitor 実装
 type RunVisitor struct {
-	ctx            context.Context
-	cfg            *config.Config
-	defaultCluster string
-	logger         *log.Logger
+	ctx             context.Context
+	cfg             *config.Config
+	defaultCluster  string
+	logger          *log.Logger
+	experimentalSSH bool
 
 	// cluster名 → clientset/restConfig のキャッシュ
 	clients map[string]*k8sClientEntry
@@ -49,12 +50,14 @@ func NewRunVisitor(
 	ctx context.Context,
 	cfg *config.Config,
 	logger *log.Logger,
+	experimentalSSH bool,
 ) *RunVisitor {
 	return &RunVisitor{
 		ctx:              ctx,
 		cfg:              cfg,
 		defaultCluster:   cfg.Cluster,
 		logger:           logger,
+		experimentalSSH:  experimentalSSH,
 		clients:          make(map[string]*k8sClientEntry),
 		ipAllocator:      loopback.NewIPAllocator(),
 		portChecker:      port.NewPortConflictChecker(),
@@ -219,20 +222,19 @@ func (v *RunVisitor) VisitTCP(s *config.TCPService) error {
 	})
 
 	// GCP SSH tunnelをgoroutineで起動
-	go func(b *config.SSHBastion, local port.LocalPort, target string, targetPort port.TCPPort, logger *log.Logger) {
-		if err := gcp.StartGCPSSHTunnel(
-			v.ctx,
-			b,
-			local,
-			target,
-			targetPort,
-			logger,
-		); err != nil {
+	go func(b *config.SSHBastion, local port.LocalPort, target string, targetPort port.TCPPort, logger *log.Logger, useNative bool) {
+		var tunnelErr error
+		if useNative {
+			tunnelErr = gcp.StartGCPSSHTunnelNative(v.ctx, b, local, target, targetPort, logger)
+		} else {
+			tunnelErr = gcp.StartGCPSSHTunnel(v.ctx, b, local, target, targetPort, logger)
+		}
+		if tunnelErr != nil {
 			if v.ctx.Err() == nil {
-				fmt.Fprintf(os.Stderr, "gcp-ssh tunnel error for %s: %v\n", b.Instance, err)
+				fmt.Fprintf(os.Stderr, "gcp-ssh tunnel error for %s: %v\n", b.Instance, tunnelErr)
 			}
 		}
-	}(bastion, localPort, s.TargetHost, s.TargetPort, v.logger)
+	}(bastion, localPort, s.TargetHost, s.TargetPort, v.logger, v.experimentalSSH)
 
 	// ServiceConfig を保存
 	v.serviceConfigs = append(v.serviceConfigs, envoy.ServiceConfig{

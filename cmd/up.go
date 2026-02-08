@@ -12,8 +12,9 @@ import (
 )
 
 type upOptions struct {
-	configFile  string
-	noEditHosts bool
+	configFile      string
+	noEditHosts     bool
+	experimentalSSH bool
 }
 
 var upOpts = &upOptions{}
@@ -36,6 +37,8 @@ func init() {
 
 	upCmd.Flags().StringVarP(&upOpts.configFile, "config", "f", "", "config yaml path")
 	upCmd.Flags().BoolVar(&upOpts.noEditHosts, "no-edit-hosts", false, "skip updating /etc/hosts")
+	upCmd.Flags().BoolVar(&upOpts.experimentalSSH, "experimental-ssh", false,
+		"[experimental] use Go SDK for SSH tunnel instead of gcloud CLI")
 }
 
 func runUp(cmd *cobra.Command, args []string) error {
@@ -63,5 +66,5 @@ func runUp(cmd *cobra.Command, args []string) error {
 	// 論理反転: noEditHosts=false → updateHosts=true
 	updateHosts := !upOpts.noEditHosts
 
-	return run.Run(ctx, cfg, globalLogLevel, updateHosts)
+	return run.Run(ctx, cfg, globalLogLevel, updateHosts, upOpts.experimentalSSH)
 }
