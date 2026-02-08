@@ -83,7 +83,7 @@ kubectl localmesh --help
 - Access to a **Kubernetes 1.30+** cluster (WebSocket port-forward support required)
 - `envoy` installed locally
 - Go 1.21+ (if building from source)
-- **GCP SSH Bastion (optional)**: `gcloud` CLI and Application Default Credentials for database connections via SSH tunnel
+- **GCP SSH Bastion (optional)**: `gcloud` CLI and Application Default Credentials (ADC) for database connections via IAP tunnel
 
 > **Note:** kubectl-localmesh uses WebSocket-based port-forwarding, which requires Kubernetes 1.30 or later. SPDY-based port-forwarding (used in Kubernetes 1.29 and earlier) is not supported.
 
@@ -114,6 +114,8 @@ ssh_bastions:
     instance: bastion-instance-1
     zone: asia-northeast1-a
     project: my-gcp-project
+    # ssh_key_path: ~/.ssh/custom-key  # Optional: custom SSH key path (--experimental-ssh only)
+    # ssh_user: my-user                # Optional: SSH username (--experimental-ssh only)
 
 services:
   # Kubernetes Services (HTTP/gRPC)
@@ -231,12 +233,19 @@ The following flags are available for all subcommands:
 
 - `--log-level string`: Log level for Envoy and internal operations (debug|info|warn, default: info)
 
+### `up` Subcommand Flags
+
+- `--experimental-ssh`: [experimental] Use Go SDK for SSH tunnel instead of `gcloud` CLI. This uses IAP TCP Tunnel + SSH implemented in pure Go, removing the `gcloud` CLI dependency for SSH bastion connections. This feature is experimental and may have issues with OS Login username resolution and SSH authentication.
+
 Examples:
 
 ```bash
 # Debug mode for all subcommands
 kubectl localmesh --log-level debug up -f services.yaml
 kubectl localmesh --log-level debug dump-envoy-config -f services.yaml
+
+# Use experimental Go SDK SSH tunnel
+sudo kubectl localmesh up -f services.yaml --experimental-ssh
 ```
 
 Example output:

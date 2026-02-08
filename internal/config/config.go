@@ -18,9 +18,11 @@ type Config struct {
 }
 
 type SSHBastion struct {
-	Instance string `yaml:"instance"` // GCP Compute Instance名
-	Zone     string `yaml:"zone"`     // GCPゾーン
-	Project  string `yaml:"project"`  // GCPプロジェクトID（省略時はgcloud config）
+	Instance   string `yaml:"instance"`               // GCP Compute Instance名
+	Zone       string `yaml:"zone"`                   // GCPゾーン
+	Project    string `yaml:"project"`                // GCPプロジェクトID（省略時は環境変数でフォールバック）
+	SSHKeyPath string `yaml:"ssh_key_path,omitempty"` // SSH秘密鍵パス
+	SSHUser    string `yaml:"ssh_user,omitempty"`     // SSHユーザー名
 }
 
 // Service はすべてのサービス種別が実装すべきインターフェース
@@ -190,8 +192,12 @@ func (t *TCPService) Validate(cfg *Config) error {
 	if t.SSHBastion == "" {
 		return fmt.Errorf("ssh_bastion is required for tcp service '%s'", t.Host)
 	}
-	if _, ok := cfg.SSHBastions[t.SSHBastion]; !ok {
+	bastion, ok := cfg.SSHBastions[t.SSHBastion]
+	if !ok {
 		return fmt.Errorf("ssh_bastion '%s' not found for service '%s'", t.SSHBastion, t.Host)
+	}
+	if bastion.Project == "" {
+		return fmt.Errorf("project is required for tcp service '%s' (ssh_bastion '%s'): set in config or via GOOGLE_CLOUD_PROJECT, GCLOUD_PROJECT, or CLOUDSDK_CORE_PROJECT", t.Host, t.SSHBastion)
 	}
 	if t.TargetHost == "" {
 		return fmt.Errorf("target_host is required for tcp service '%s'", t.Host)
@@ -243,6 +249,36 @@ func Load(path string) (*Config, error) {
 
 	if len(cfg.Services) == 0 {
 		return nil, fmt.Errorf("no services configured in %s", path)
+	}
+
+	// TCPサービスが存在するかチェック
+	hasTCPService := false
+	for _, svcDef := range cfg.Services {
+		svc := svcDef.Get()
+		if _, ok := svc.(*TCPService); ok {
+			hasTCPService = true
+			break
+		}
+	}
+
+	// SSHBastionのフィールドをトリムし、projectフォールバックを実施
+	for _, bastion := range cfg.SSHBastions {
+		bastion.Instance = strings.TrimSpace(bastion.Instance)
+		bastion.Zone = strings.TrimSpace(bastion.Zone)
+		bastion.Project = strings.TrimSpace(bastion.Project)
+		bastion.SSHKeyPath = strings.TrimSpace(bastion.SSHKeyPath)
+		bastion.SSHUser = strings.TrimSpace(bastion.SSHUser)
+
+		// TCPサービスが存在し、projectが空の場合はフォールバック
+		if hasTCPService && bastion.Project == "" {
+			if project := os.Getenv("GOOGLE_CLOUD_PROJECT"); project != "" {
+				bastion.Project = project
+			} else if project := os.Getenv("GCLOUD_PROJECT"); project != "" {
+				bastion.Project = project
+			} else if project := os.Getenv("CLOUDSDK_CORE_PROJECT"); project != "" {
+				bastion.Project = project
+			}
+		}
 	}
 
 	// バリデーション

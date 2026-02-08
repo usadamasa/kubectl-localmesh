@@ -15,7 +15,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func Run(ctx context.Context, cfg *config.Config, logLevel string, updateHosts bool) error {
+func Run(ctx context.Context, cfg *config.Config, logLevel string, updateHosts bool, experimentalSSH bool) error {
 	// Logger初期化
 	logger := log.New(logLevel)
 
@@ -26,7 +26,7 @@ func Run(ctx context.Context, cfg *config.Config, logLevel string, updateHosts b
 	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	// Visitor の生成（Kubernetes clientはサービスごとにlazy初期化）
-	visitor := NewRunVisitor(ctx, cfg, logger)
+	visitor := NewRunVisitor(ctx, cfg, logger, experimentalSSH)
 
 	// Visitorパターンで各サービスを処理
 	for _, svcDef := range cfg.Services {

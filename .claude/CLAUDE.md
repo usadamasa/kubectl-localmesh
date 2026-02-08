@@ -70,10 +70,12 @@ DB (Cloud SQL等、Private IP)
    - ローカルポート割り当て（`FreeLocalPort`）
 
 5. **gcp** (`internal/gcp/`)
-   - **GCP SSH tunnel実装**
-   - GCP Compute Instance経由のSSH port-forward
-   - `gcloud compute ssh`コマンドをexec.Commandで実行
-   - Application Default Credentials (ADC)は`gcloud`コマンドが自動処理
+   - **GCP SSH tunnel実装（デフォルト: `gcloud compute ssh`経由）**
+   - `ssh_tunnel.go`: `gcloud compute ssh`ベースのSSH tunnel（デフォルト）
+   - `ssh_tunnel_native.go`: **[experimental]** 純Go実装のSSH tunnel（`--experimental-ssh`で有効化）
+   - `auth.go`: ADC認証トークン取得（OAuth2 TokenSource、experimental用）
+   - `iap_tunnel.go`: IAP TCP Tunnel v4プロトコル実装（WebSocket経由、experimental用）
+   - `ssh_keys.go`: SSH認証メソッドの構築（鍵ファイル探索 + ssh-agent対応、experimental用）
    - 自動再接続ループ（300ms間隔）
 
 6. **envoy** (`internal/envoy/`)
@@ -192,6 +194,18 @@ kubectl-localmeshにおけるログレベル設計とユーザーフレンドリ
 
 詳細: `.claude/skills/kubectl-localmesh-logging-guide/SKILL.md`
 
+#### `kubectl-localmesh-gcp-ssh-tunnel` - GCP SSH tunnel実装詳細
+GCP SSH Bastion経由のDB接続に関するSSH tunnel実装の詳細、デバッグ方法、既知の問題を提供します。
+
+**主な機能**:
+- IAP TCP Tunnel v4プロトコルの仕様
+- GCP OS LoginのSSHユーザー名解決の仕組み
+- `gcloud compute ssh`とGo SDK実装の違い
+- デバッグ時のチェックポイント
+- 既知の問題と解決状況
+
+詳細: `.claude/skills/kubectl-localmesh-gcp-ssh-tunnel/SKILL.md`
+
 #### `kubectl-localmesh-macos-localhost` - macOS .localhostドメインの挙動
 macOSにおける.localhostドメインの特殊な挙動と、TCPサービス設定時の注意点を提供します。
 
@@ -232,7 +246,9 @@ ssh_bastions:
   primary:
     instance: bastion-instance-1    # GCP Compute Instance名
     zone: asia-northeast1-a         # ゾーン
-    project: my-gcp-project         # プロジェクトID
+    project: my-gcp-project         # プロジェクトID（省略時は環境変数でフォールバック）
+    # ssh_key_path: ~/.ssh/custom-key  # SSH秘密鍵パス（--experimental-ssh用）
+    # ssh_user: my-user                # SSHユーザー名（--experimental-ssh用）
 
 services:
   # Kubernetesサービス（HTTP/gRPC）
@@ -274,6 +290,11 @@ listener_port: 80
 services: ...
 ```
 
+**設定ファイルフォーマット変更時の注意:**
+設定ファイルの構造に変更が生じる場合は、以下を必ず点検すること:
+1. `schemas/config.schema.json`の更新が必要かどうか
+2. スナップショットテストの更新が必要かどうか（`-update`フラグで再生成）
+
 ### 構造体階層
 
 **v0.2.0でタグ付きユニオン型を導入:**
@@ -313,15 +334,20 @@ TCPService (GCP SSH tunnel)
   - `bash`: port-forwardループスクリプト実行
   - **Kubernetes 1.30+**: WebSocket port-forward対応が必須
   - **GCP SSH Bastion (オプション):**
-    - `gcloud` CLI: SSH tunnel確立用（`gcloud compute ssh`コマンドを使用）
+    - `gcloud` CLI（デフォルトのSSH tunnel実装で使用）
     - Application Default Credentials (ADC)
       - `gcloud auth application-default login` または
       - 環境変数 `GOOGLE_APPLICATION_CREDENTIALS`
+    - **`--experimental-ssh`フラグ:** Go SDKによる純Go実装（gcloud CLI不要、experimental）
+      - SSH秘密鍵（`~/.ssh/google_compute_engine`、`~/.ssh/id_ed25519`、`~/.ssh/id_rsa`のいずれか）が必要
 
 - **Go modules:**
   - `gopkg.in/yaml.v3`: 設定ファイルパース
   - `k8s.io/client-go v0.35.0+`: Kubernetes client with WebSocket support
   - `github.com/santhosh-tekuri/jsonschema/v6`: JSON Schema Draft 2020-12検証（validateコマンド用）
+  - `golang.org/x/crypto/ssh`: SSH client（GCP SSH Bastion experimental用）
+  - `golang.org/x/oauth2`: ADC認証（GCP SSH Bastion experimental用）
+  - `github.com/gorilla/websocket`: IAP TCP Tunnelプロトコル（GCP SSH Bastion experimental用）
 
 - **開発ツール (aqua管理):**
   - `task`: タスクランナー（Taskfile.yaml実行）

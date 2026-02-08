@@ -94,6 +94,22 @@ else
 fi
 echo ""
 
+# SSH秘密鍵の確認（--experimental-ssh使用時のみ必要）
+echo "  - SSH秘密鍵（--experimental-ssh使用時のみ）"
+if [ -f "$HOME/.ssh/google_compute_engine" ]; then
+    echo "    ✅ SSH鍵: ~/.ssh/google_compute_engine"
+elif [ -f "$HOME/.ssh/id_ed25519" ]; then
+    echo "    ✅ SSH鍵: ~/.ssh/id_ed25519"
+elif [ -f "$HOME/.ssh/id_rsa" ]; then
+    echo "    ✅ SSH鍵: ~/.ssh/id_rsa"
+else
+    echo "    ⚠️  SSH秘密鍵が見つかりません（--experimental-ssh使用時のみ必要）"
+    echo "       以下のいずれかの方法で作成してください:"
+    echo "       - gcloud compute ssh INSTANCE --zone=ZONE --project=PROJECT --tunnel-through-iap"
+    echo "       - ssh-keygen -t ed25519"
+fi
+echo ""
+
 # 結果サマリー
 echo "==================================="
 if [ $exit_code -eq 0 ]; then

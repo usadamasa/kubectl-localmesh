@@ -258,6 +258,7 @@ ssh_bastions:
   primary:
     instance: bastion-1
     zone: asia-northeast1-a
+    project: test-project
 services:
   - kind: kubernetes
     host: api.localhost
@@ -550,6 +551,7 @@ ssh_bastions:
   primary:
     instance: bastion-1
     zone: asia-northeast1-a
+    project: test-project
 services:
   - kind: kubernetes
     host: api.localhost
@@ -633,6 +635,7 @@ ssh_bastions:
   primary:
     instance: bastion-1
     zone: asia-northeast1-a
+    project: test-project
 services:
   - kind: kubernetes
     host: test.localhost
@@ -1389,5 +1392,193 @@ services:
 	}
 	if grpc3.ListenerPort != 0 {
 		t.Errorf("expected listener_port 0, got %d", grpc3.ListenerPort)
+	}
+}
+
+// ========== SSH Bastion新フィールド関連テスト ==========
+
+func TestLoad_SSHBastion_WithSSHKeyPath(t *testing.T) {
+	// ssh_key_pathが正しく読み込まれること
+	content := `
+listener_port: 80
+ssh_bastions:
+  primary:
+    instance: bastion-1
+    zone: asia-northeast1-a
+    project: test-project
+    ssh_key_path: /home/user/.ssh/id_rsa
+services:
+  - kind: tcp
+    host: db.localhost
+    ssh_bastion: primary
+    target_host: 10.0.0.1
+    target_port: 5432
+`
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "config.yaml")
+	if err := os.WriteFile(configPath, []byte(content), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg, err := Load(configPath)
+	if err != nil {
+		t.Fatalf("Load failed: %v", err)
+	}
+
+	bastion, ok := cfg.SSHBastions["primary"]
+	if !ok {
+		t.Fatal("expected bastion 'primary' not found")
+	}
+	if bastion.SSHKeyPath != "/home/user/.ssh/id_rsa" {
+		t.Errorf("expected ssh_key_path '/home/user/.ssh/id_rsa', got '%s'", bastion.SSHKeyPath)
+	}
+}
+
+func TestLoad_SSHBastion_WithSSHUser(t *testing.T) {
+	// ssh_userが正しく読み込まれること
+	content := `
+listener_port: 80
+ssh_bastions:
+  primary:
+    instance: bastion-1
+    zone: asia-northeast1-a
+    project: test-project
+    ssh_user: gce-user
+services:
+  - kind: tcp
+    host: db.localhost
+    ssh_bastion: primary
+    target_host: 10.0.0.1
+    target_port: 5432
+`
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "config.yaml")
+	if err := os.WriteFile(configPath, []byte(content), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg, err := Load(configPath)
+	if err != nil {
+		t.Fatalf("Load failed: %v", err)
+	}
+
+	bastion, ok := cfg.SSHBastions["primary"]
+	if !ok {
+		t.Fatal("expected bastion 'primary' not found")
+	}
+	if bastion.SSHUser != "gce-user" {
+		t.Errorf("expected ssh_user 'gce-user', got '%s'", bastion.SSHUser)
+	}
+}
+
+func TestLoad_SSHBastion_ProjectFallback_GOOGLE_CLOUD_PROJECT(t *testing.T) {
+	// 環境変数フォールバック: GOOGLE_CLOUD_PROJECT
+	t.Setenv("GOOGLE_CLOUD_PROJECT", "fallback-project-1")
+	t.Setenv("GCLOUD_PROJECT", "fallback-project-2")
+	t.Setenv("CLOUDSDK_CORE_PROJECT", "fallback-project-3")
+
+	content := `
+listener_port: 80
+ssh_bastions:
+  primary:
+    instance: bastion-1
+    zone: asia-northeast1-a
+services:
+  - kind: tcp
+    host: db.localhost
+    ssh_bastion: primary
+    target_host: 10.0.0.1
+    target_port: 5432
+`
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "config.yaml")
+	if err := os.WriteFile(configPath, []byte(content), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg, err := Load(configPath)
+	if err != nil {
+		t.Fatalf("Load failed: %v", err)
+	}
+
+	bastion, ok := cfg.SSHBastions["primary"]
+	if !ok {
+		t.Fatal("expected bastion 'primary' not found")
+	}
+	if bastion.Project != "fallback-project-1" {
+		t.Errorf("expected project 'fallback-project-1' (from GOOGLE_CLOUD_PROJECT), got '%s'", bastion.Project)
+	}
+}
+
+func TestLoad_SSHBastion_ProjectFallback_CLOUDSDK_CORE_PROJECT(t *testing.T) {
+	// 環境変数フォールバック: CLOUDSDK_CORE_PROJECT（GOOGLE_CLOUD_PROJECTが未設定）
+	t.Setenv("GOOGLE_CLOUD_PROJECT", "")
+	t.Setenv("GCLOUD_PROJECT", "")
+	t.Setenv("CLOUDSDK_CORE_PROJECT", "fallback-project-3")
+
+	content := `
+listener_port: 80
+ssh_bastions:
+  primary:
+    instance: bastion-1
+    zone: asia-northeast1-a
+services:
+  - kind: tcp
+    host: db.localhost
+    ssh_bastion: primary
+    target_host: 10.0.0.1
+    target_port: 5432
+`
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "config.yaml")
+	if err := os.WriteFile(configPath, []byte(content), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg, err := Load(configPath)
+	if err != nil {
+		t.Fatalf("Load failed: %v", err)
+	}
+
+	bastion, ok := cfg.SSHBastions["primary"]
+	if !ok {
+		t.Fatal("expected bastion 'primary' not found")
+	}
+	if bastion.Project != "fallback-project-3" {
+		t.Errorf("expected project 'fallback-project-3' (from CLOUDSDK_CORE_PROJECT), got '%s'", bastion.Project)
+	}
+}
+
+func TestLoad_SSHBastion_ProjectRequired(t *testing.T) {
+	// TCPサービスがある場合にprojectが必須
+	t.Setenv("GOOGLE_CLOUD_PROJECT", "")
+	t.Setenv("GCLOUD_PROJECT", "")
+	t.Setenv("CLOUDSDK_CORE_PROJECT", "")
+
+	content := `
+listener_port: 80
+ssh_bastions:
+  primary:
+    instance: bastion-1
+    zone: asia-northeast1-a
+services:
+  - kind: tcp
+    host: db.localhost
+    ssh_bastion: primary
+    target_host: 10.0.0.1
+    target_port: 5432
+`
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "config.yaml")
+	if err := os.WriteFile(configPath, []byte(content), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	_, err := Load(configPath)
+	if err == nil {
+		t.Fatal("expected error for missing project when TCP service exists, got nil")
+	}
+	if !containsString(err.Error(), "project is required") {
+		t.Errorf("expected error containing 'project is required', got '%s'", err.Error())
 	}
 }

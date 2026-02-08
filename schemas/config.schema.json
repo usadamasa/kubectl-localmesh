@@ -50,6 +50,14 @@
         "project": {
           "type": "string",
           "description": "GCP project ID (optional, uses gcloud config default)"
+        },
+        "ssh_key_path": {
+          "type": "string",
+          "description": "Path to SSH private key file (default: ~/.ssh/google_compute_engine)"
+        },
+        "ssh_user": {
+          "type": "string",
+          "description": "SSH username (default: current OS user)"
         }
       },
       "required": ["instance", "zone"],
