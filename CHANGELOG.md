@@ -1,5 +1,15 @@
 # Changelog
 
+## [v0.4.0](https://github.com/usadamasa/kubectl-localmesh/compare/v0.3.4...v0.4.0) - 2026-02-15
+### New Features 🎉
+- chore(deps): bump golang.org/x/crypto from 0.47.0 to 0.48.0 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/86
+- chore(deps): bump golang.org/x/oauth2 from 0.34.0 to 0.35.0 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/88
+### Dependencies
+- chore(deps): bump k8s.io/api from 0.35.0 to 0.35.1 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/84
+- chore(deps): bump k8s.io/client-go from 0.35.0 to 0.35.1 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/85
+### Other Changes
+- feat: add experimental Go SDK SSH tunnel and improve gcp-ssh-tunnel skill by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/82
+
 ## [v0.3.4](https://github.com/usadamasa/kubectl-localmesh/compare/v0.3.3...v0.3.4) - 2026-02-08
 ### New Features 🎉
 - feat: add multi-cluster support with per-service cluster override by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/76
