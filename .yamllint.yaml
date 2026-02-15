@@ -6,9 +6,10 @@ yaml-files:
 extends: default
 
 ignore:
-  - 'test/snapshot/testdata/snapshots/*.yaml'
-  - 'test/snapshot/testdata/portforward-mappings/*.yaml'
+  - .github/workflows/daily-repo-status.lock.yml
   - 'test/e2e/output/*.yaml'
+  - 'test/snapshot/testdata/portforward-mappings/*.yaml'
+  - 'test/snapshot/testdata/snapshots/*.yaml'
 
 rules:
   line-length: disable
