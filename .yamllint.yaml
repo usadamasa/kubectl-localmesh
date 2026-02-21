@@ -6,7 +6,7 @@ yaml-files:
 extends: default
 
 ignore:
-  - .github/workflows/daily-repo-status.lock.yml
+  - .github/workflows/*.lock.yml
   - 'test/e2e/output/*.yaml'
   - 'test/snapshot/testdata/portforward-mappings/*.yaml'
   - 'test/snapshot/testdata/snapshots/*.yaml'
