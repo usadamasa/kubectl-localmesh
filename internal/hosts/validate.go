@@ -29,7 +29,7 @@ func (e *hostsFileCorruptedError) Error() string {
 	sb.WriteString("Please manually fix the following problems:\n\n")
 
 	for i, problem := range e.state.problems {
-		sb.WriteString(fmt.Sprintf("%d. %s\n", i+1, problem))
+		fmt.Fprintf(&sb, "%d. %s\n", i+1, problem)
 	}
 
 	sb.WriteString("\nCurrent /etc/hosts content:\n")
@@ -39,8 +39,8 @@ func (e *hostsFileCorruptedError) Error() string {
 	sb.WriteString("\nTo fix:\n")
 	sb.WriteString("1. Manually edit /etc/hosts with sudo, like `sudo vim -u NONE /etc/hosts`\n")
 	sb.WriteString("2. Remove all lines between and including:\n")
-	sb.WriteString(fmt.Sprintf("     %s\n", markerStart))
-	sb.WriteString(fmt.Sprintf("     %s\n", markerEnd))
+	fmt.Fprintf(&sb, "     %s\n", markerStart)
+	fmt.Fprintf(&sb, "     %s\n", markerEnd)
 	sb.WriteString("3. Run kubectl-localmesh again\n")
 
 	return sb.String()
