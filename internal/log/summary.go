@@ -66,8 +66,8 @@ func GenerateSummary(services []ServiceSummary, listenerPort port.ListenerPort) 
 		for _, svc := range httpServices {
 			p := svc.EffectiveListenPort(listenerPort)
 			protocolLabel := formatProtocolLabel(svc.Protocol)
-			sb.WriteString(fmt.Sprintf("  • http://%s:%d (%s) -> %s\n",
-				svc.Host, p, protocolLabel, svc.Backend))
+			fmt.Fprintf(&sb, "  • http://%s:%d (%s) -> %s\n",
+				svc.Host, p, protocolLabel, svc.Backend)
 		}
 		sb.WriteString("\n")
 	}
@@ -77,8 +77,8 @@ func GenerateSummary(services []ServiceSummary, listenerPort port.ListenerPort) 
 		sb.WriteString("  TCP Services:\n")
 		for _, svc := range tcpServices {
 			p := svc.EffectiveListenPort(listenerPort)
-			sb.WriteString(fmt.Sprintf("  • tcp://%s:%d -> %s\n",
-				svc.Host, p, svc.Backend))
+			fmt.Fprintf(&sb, "  • tcp://%s:%d -> %s\n",
+				svc.Host, p, svc.Backend)
 		}
 		sb.WriteString("\n")
 	}
