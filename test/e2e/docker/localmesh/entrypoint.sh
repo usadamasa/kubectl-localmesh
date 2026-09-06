@@ -35,8 +35,11 @@ echo "K8s API server ready"
 echo "Deploying test services..."
 kubectl apply -k /manifests/
 
+# Deployment の rollout を待つ。`kubectl wait pod` は対象 Pod が 1 つも存在しない間は
+# タイムアウトを待たずに "no matching resources found" で即失敗するため、apply 直後の
+# Pod がまだ生成されていない時間帯と競合する。
 echo "Waiting for pods to be ready..."
-if ! kubectl wait --for=condition=ready pod -l app=http-test-server -n e2e-test --timeout=120s; then
+if ! kubectl rollout status deployment/http-test-server -n e2e-test --timeout=120s; then
     echo "ERROR: http-test-server pod failed to become ready"
     echo "=== Pod status ==="
     kubectl get pods -n e2e-test -l app=http-test-server -o wide || true
@@ -47,7 +50,7 @@ if ! kubectl wait --for=condition=ready pod -l app=http-test-server -n e2e-test 
     exit 1
 fi
 
-if ! kubectl wait --for=condition=ready pod -l app=grpc-test-server -n e2e-test --timeout=120s; then
+if ! kubectl rollout status deployment/grpc-test-server -n e2e-test --timeout=120s; then
     echo "ERROR: grpc-test-server pod failed to become ready"
     echo "=== Pod status ==="
     kubectl get pods -n e2e-test -l app=grpc-test-server -o wide || true
