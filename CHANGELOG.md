@@ -1,5 +1,24 @@
 # Changelog
 
+## [v0.4.1](https://github.com/usadamasa/kubectl-localmesh/compare/v0.4.0...v0.4.1) - 2026-09-06
+
+### New Features 🎉
+- chore(deps): bump golang.org/x/crypto from 0.48.0 to 0.49.0 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/106
+- chore(deps): bump golang.org/x/oauth2 from 0.35.0 to 0.36.0 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/107
+- chore(deps): bump golang.org/x/crypto from 0.49.0 to 0.53.0 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/114
+### Dependencies
+- chore(deps): bump k8s.io/api from 0.35.1 to 0.35.2 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/101
+- chore(deps): bump github.com/moby/spdystream from 0.5.0 to 0.5.1 in the go_modules group across 1 directory by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/109
+- chore(deps): bump k8s.io/apimachinery from 0.35.2 to 0.36.2 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/102
+- chore(deps): bump k8s.io/client-go from 0.35.1 to 0.36.2 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/103
+### Other Changes
+- update by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/98
+- fix: update golangci-lint to v2.10.1 to resolve go1.26 panic by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/104
+- chore: remove Weekly Repo Status Report by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/112
+- chore: upgrade to Go 1.26 and golangci-lint v2.12.2 by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/113
+- fix(e2e): Pod の生成待ちを kubectl rollout status に置き換える by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/121
+- chore(tagpr): App ID をワークフローに直書きして repository variable を不要にする by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/120
+
 ## [v0.4.0](https://github.com/usadamasa/kubectl-localmesh/compare/v0.3.4...v0.4.0) - 2026-02-15
 ### New Features 🎉
 - chore(deps): bump golang.org/x/crypto from 0.47.0 to 0.48.0 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/86
