@@ -17,11 +17,12 @@ jobs:
       - yamllint
       - snapshot
       - e2e
-    if: failure()
+    if: always()
     timeout-minutes: 10
     permissions: {}
     steps:
-      - run: exit 1
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
 
   build:
     runs-on: ubuntu-latest
