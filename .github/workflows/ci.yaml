@@ -50,22 +50,16 @@ jobs:
 
   yamllint:
     runs-on: ubuntu-latest
-    # reviewdog が PR の差分を読むため、既定 (read) と同じく pull-requests の読み取りを残す
-    permissions:
-      contents: read
-      pull-requests: read
     steps:
       - name: "checkout"
         uses: "actions/checkout@v6.1.0"
 
+      - name: setup-nix
+        uses: $/.github/composites/setup-nix
+
+      # -f github で指摘を workflow の annotation に出す。warning では落とさず、error だけで落ちる
       - name: "review yaml format"
-        uses: reviewdog/action-yamllint@v1.25.2
-        with:
-          github_token: "${{ secrets.GITHUB_TOKEN }}"
-          reporter: "github-pr-review"
-          level: "warning"
-          yamllint_flags: "-c .yamllint.yaml ."
-          fail_level: "error"
+        run: yamllint -f github -c .yamllint.yaml .
 
   snapshot:
     runs-on: ubuntu-latest
