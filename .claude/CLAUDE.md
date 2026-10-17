@@ -353,6 +353,11 @@ TCPService (GCP SSH tunnel)
   - `task`: タスクランナー（Taskfile.yaml実行）
   - `golangci-lint`: Go静的解析ツール
   - `goreleaser`: リリース自動化ツール
+  - `go`: `go.mod` の `go` 行と同じ版を`aqua.yaml`の`golang/go`で固定する
+
+**Goの版を上げるときは`go.mod`と`aqua.yaml`を同時に変更する。**
+片方だけ上げると、手元のGoとaqua管理のgolangci-lintがずれ、`task lint`が
+`file requires newer Go version`でpanicする（CIは`setup-go`が`go.mod`から入れるため気づけない）。
 
 開発ツールのインストール:
 
