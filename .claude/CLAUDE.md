@@ -143,7 +143,7 @@ Taskfileを使った標準開発ワークフローを提供します。
 - `task test`: テスト実行
 - `task lint`: 静的解析（yamllint + golangci-lint）
 - `task format`: コードフォーマット
-- `nix develop` / `direnv allow`: 開発ツールの読み込み（`flake.nix`のdevShell）
+- `direnv allow`: 開発ツールの読み込み（`flake.nix`のdevShell）
 
 詳細: `.claude/skills/go-taskfile-workflow/SKILL.md`
 
@@ -361,10 +361,10 @@ TCPService (GCP SSH tunnel)
 devShellは`GOTOOLCHAIN=local`を設定しているため、`go.mod`の`go`行がdevShellのGoより新しいと
 toolchainを取りに行かずに即座に失敗する。ツールの版を上げるときは`nix flake update`で`flake.lock`を更新する。
 
-開発ツールの読み込み（[nix-direnv](https://github.com/nix-community/nix-direnv)を使う場合は`direnv allow`で自動）:
+開発ツールの読み込み（[nix-direnv](https://github.com/nix-community/nix-direnv)が`.envrc`の`use flake`でdevShellを読み込む）:
 
 ```bash
-nix develop
+direnv allow
 ```
 
 ### WebSocket Port-Forward

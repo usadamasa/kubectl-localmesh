@@ -64,12 +64,10 @@ gofmtを使用してGoコードを自動フォーマットします。
 
 ### 開発ツールの読み込み
 
-`flake.nix`のdevShellを、nix-direnv（`.envrc`の`use flake`）か`nix develop`で読み込みます。
+`flake.nix`のdevShellを、nix-direnv（`.envrc`の`use flake`）で読み込みます。
 
 ```bash
 direnv allow
-# または
-nix develop
 ```
 
 ### タスク一覧
@@ -110,8 +108,6 @@ task --list
 ```bash
 # devShellが読み込まれていない場合
 direnv allow
-# または
-nix develop
 
 # またはTaskfileが存在しない場合
 ls Taskfile.yaml
