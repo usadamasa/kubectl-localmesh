@@ -1,5 +1,16 @@
 # Changelog
 
+## [v0.4.3](https://github.com/usadamasa/kubectl-localmesh/compare/v0.4.2...v0.4.3) - 2026-10-17
+
+### Other Changes
+- ci: ci-status-check を always() 形に直す by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/124
+- ci: aqua で Go を go.mod の版に固定する by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/126
+- 開発ツールを aqua から nix の devShell へ移す by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/127
+- GitHub Actions の action を gh actions-lock で固定する by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/128
+- リリースと yamllint のツールを nix の devShell から取る by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/129
+- ci: create-github-app-token を v3.2.0 へ上げ client-id で認証する by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/130
+- ci: tagpr に渡す App トークンの権限を絞る by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/131
+
 ## [v0.4.2](https://github.com/usadamasa/kubectl-localmesh/compare/v0.4.1...v0.4.2) - 2026-09-06
 
 ### Other Changes
