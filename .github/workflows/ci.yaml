@@ -9,6 +9,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Go と開発ツールは flake.nix の devShell から取る (.github/composites/setup-nix)。版の正本は flake.lock
 jobs:
   ci-status-check:
     runs-on: ubuntu-slim
@@ -31,18 +32,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: aqua-installer
-        uses: ./.github/composites/aqua-installer
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version-file: go.mod
+      - name: setup-nix
+        uses: ./.github/composites/setup-nix
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v9.2.0
-        with:
-          version: v2.12.2
+        run: golangci-lint run
 
       - name: test
         run: task test
@@ -72,13 +66,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: aqua-installer
-        uses: ./.github/composites/aqua-installer
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version-file: go.mod
+      - name: setup-nix
+        uses: ./.github/composites/setup-nix
 
       - name: Build
         run: task build
@@ -94,8 +83,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: aqua-installer
-        uses: ./.github/composites/aqua-installer
+      - name: setup-nix
+        uses: ./.github/composites/setup-nix
 
       - name: Run E2E tests (docker-compose)
         run: task e2e:run

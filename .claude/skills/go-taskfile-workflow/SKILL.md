@@ -12,7 +12,7 @@ allowed-tools: ["Bash", "Read", "Glob", "Grep"]
 
 - Go言語プロジェクト
 - Taskfile.yamlでビルド・テスト・Lintを管理
-- aquaで開発ツールを管理（オプション）
+- Nix devShell（`flake.nix`）で開発ツールを管理
 
 ## 提供機能
 
@@ -62,12 +62,12 @@ task format
 
 gofmtを使用してGoコードを自動フォーマットします。
 
-### 開発ツールのインストール
+### 開発ツールの読み込み
 
-aqua管理のプロジェクトの場合:
+`flake.nix`のdevShellを、nix-direnv（`.envrc`の`use flake`）で読み込みます。
 
 ```bash
-aqua install
+direnv allow
 ```
 
 ### タスク一覧
@@ -106,8 +106,8 @@ task --list
 ### Task not found
 
 ```bash
-# Taskがインストールされていない場合
-aqua install
+# devShellが読み込まれていない場合
+direnv allow
 
 # またはTaskfileが存在しない場合
 ls Taskfile.yaml

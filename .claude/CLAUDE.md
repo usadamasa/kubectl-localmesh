@@ -143,7 +143,7 @@ Taskfileを使った標準開発ワークフローを提供します。
 - `task test`: テスト実行
 - `task lint`: 静的解析（yamllint + golangci-lint）
 - `task format`: コードフォーマット
-- `aqua install`: 開発ツールのインストール
+- `direnv allow`: 開発ツールの読み込み（`flake.nix`のdevShell）
 
 詳細: `.claude/skills/go-taskfile-workflow/SKILL.md`
 
@@ -349,20 +349,22 @@ TCPService (GCP SSH tunnel)
   - `golang.org/x/oauth2`: ADC認証（GCP SSH Bastion experimental用）
   - `github.com/gorilla/websocket`: IAP TCP Tunnelプロトコル（GCP SSH Bastion experimental用）
 
-- **開発ツール (aqua管理):**
+- **開発ツール (Nix devShell管理、`flake.nix`):**
+  - `go`: `go.mod` の `go` 行と同じマイナー版を`flake.nix`の`go_1_XX`で選ぶ
   - `task`: タスクランナー（Taskfile.yaml実行）
   - `golangci-lint`: Go静的解析ツール
   - `goreleaser`: リリース自動化ツール
-  - `go`: `go.mod` の `go` 行と同じ版を`aqua.yaml`の`golang/go`で固定する
+  - `yamllint`: YAML静的解析ツール（`task lint`で使用）
+  - 版は`flake.lock`が固定するnixpkgsで決まる。CIも同じflakeを`nicknovitski/nix-develop`で読み込む
 
-**Goの版を上げるときは`go.mod`と`aqua.yaml`を同時に変更する。**
-片方だけ上げると、手元のGoとaqua管理のgolangci-lintがずれ、`task lint`が
-`file requires newer Go version`でpanicする（CIは`setup-go`が`go.mod`から入れるため気づけない）。
+**Goのマイナー版を上げるときは`go.mod`と`flake.nix`の`go_1_XX`を同時に変更する。**
+devShellは`GOTOOLCHAIN=local`を設定しているため、`go.mod`の`go`行がdevShellのGoより新しいと
+toolchainを取りに行かずに即座に失敗する。ツールの版を上げるときは`nix flake update`で`flake.lock`を更新する。
 
-開発ツールのインストール:
+開発ツールの読み込み（[nix-direnv](https://github.com/nix-community/nix-direnv)が`.envrc`の`use flake`でdevShellを読み込む）:
 
 ```bash
-aqua install
+direnv allow
 ```
 
 ### WebSocket Port-Forward
