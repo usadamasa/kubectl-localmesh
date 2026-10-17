@@ -24,12 +24,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/create-github-app-token@v2.2.2
+      # GitHub App usadamasa-tagpr のトークンで動かす
+      - uses: actions/create-github-app-token@v3.2.0
         id: app-token
         with:
-          # usadamasa-tagpr. An App ID is public information, so it is inlined
-          # here instead of requiring a per-repository variable.
-          app-id: 2551969
+          client-id: ${{ vars.TAGPR_CLIENT_ID }}
           private-key: ${{ secrets.TAGPR_PRIVATE_KEY }}
 
       - uses: Songmu/tagpr@v1.21.3
