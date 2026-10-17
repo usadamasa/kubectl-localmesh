@@ -9,6 +9,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Go と開発ツールは flake.nix の devShell から取る。版の正本は flake.lock。
+# nix-develop が devShell の PATH と env を GITHUB_PATH / GITHUB_ENV に書くので、以後の step は素で動く
 jobs:
   ci-status-check:
     runs-on: ubuntu-slim
@@ -31,18 +33,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: aqua-installer
-        uses: ./.github/composites/aqua-installer
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v23
 
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version-file: go.mod
+      - name: Load devShell
+        uses: nicknovitski/nix-develop@v1.2.1
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v9.2.0
-        with:
-          version: v2.12.2
+        run: golangci-lint run
 
       - name: test
         run: task test
@@ -72,13 +70,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: aqua-installer
-        uses: ./.github/composites/aqua-installer
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v23
 
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version-file: go.mod
+      - name: Load devShell
+        uses: nicknovitski/nix-develop@v1.2.1
 
       - name: Build
         run: task build
@@ -94,8 +90,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: aqua-installer
-        uses: ./.github/composites/aqua-installer
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v23
+
+      - name: Load devShell
+        uses: nicknovitski/nix-develop@v1.2.1
 
       - name: Run E2E tests (docker-compose)
         run: task e2e:run
