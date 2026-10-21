@@ -1,11 +1,32 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-
 version: 2
 updates:
-  - package-ecosystem: "gomod"  # See documentation for possible values
-    directory: "/"  # Location of package manifests
+  # 3 つとも group は作らず、パッケージごとに PR を出させる。group の PR が開いた
+  # ままだと同じ group の更新が全部止まり、1 つの更新の不具合で他の更新まで
+  # 巻き添えになる。
+  - package-ecosystem: gomod
+    directory: /
     schedule:
-      interval: "weekly"
+      interval: weekly
+
+  # Dependabot は `uses:` のタグと actions.lock の SHA を同じ commit で上げるので、
+  # CI の actions-lock ジョブ (`gh actions-lock --verify`) を通る。
+  #
+  # directory: / は .github/workflows/ しか見ず、composite action
+  # (.github/composites/*) の uses: を上げないので directories で足す。composite
+  # action 側の bump で actions.lock も上がるかは未確認 (2026-10)。actions-lock
+  # ジョブで落ちたら、その PR のブランチで `gh actions-lock` を実行する。
+  - package-ecosystem: github-actions
+    directories:
+      - /
+      - /.github/composites/*
+    schedule:
+      interval: weekly
+
+  # devShell の Go と lint ツールの版は flake.lock の nixpkgs の rev で決まる。
+  # nix の対象は flake.lock の input の更新だけで、security updates は出ない。
+  # flake.nix の devGo が fetchurl で差し替える go のソースは対象外。nixpkgs の
+  # go_1_26 が差し替え先の版に追いつけば、差し替えは自動で外れる。
+  - package-ecosystem: nix
+    directory: /
+    schedule:
+      interval: weekly
