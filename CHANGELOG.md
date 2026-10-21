@@ -2,6 +2,8 @@
 
 ## [v0.4.4](https://github.com/usadamasa/kubectl-localmesh/compare/v0.4.3...v0.4.4) - 2026-10-21
 
+### New Features 🎉
+- chore(deps): bump the k8s group with 2 updates by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/144
 ### Other Changes
 - devShell の Go を 1.26.10 へ上げる (GO-2026-6809) by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/135
 - golang.org/x/net・crypto・text を脆弱性の修正版へ上げる by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/136
