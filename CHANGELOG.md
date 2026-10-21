@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.4.5](https://github.com/usadamasa/kubectl-localmesh/compare/v0.4.4...v0.4.5) - 2026-10-21
+
+### Other Changes
+- CHANGELOG の v0.4.4 に #144 を足す by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/145
+
 ## [v0.4.4](https://github.com/usadamasa/kubectl-localmesh/compare/v0.4.3...v0.4.4) - 2026-10-21
 
 ### New Features 🎉
