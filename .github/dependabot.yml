@@ -1,12 +1,25 @@
 version: 2
 updates:
-  # 3 つとも group は作らず、パッケージごとに PR を出させる。group の PR が開いた
+  # group は作らず、パッケージごとに PR を出させる。group の PR が開いた
   # ままだと同じ group の更新が全部止まり、1 つの更新の不具合で他の更新まで
-  # 巻き添えになる。
+  # 巻き添えになる。k8s.io は例外 (下の groups)。
   - package-ecosystem: gomod
     directory: /
     schedule:
       interval: weekly
+    # k8s.io/api・apimachinery・client-go などは同じ版で揃えないと解決できず、
+    # 単独の PR は毎回 dependency_file_not_resolvable で落ちるのでまとめる。
+    # applies-to は 1 つの group に 1 つしか書けないので、version updates と
+    # security updates に分けて 2 つ置く。
+    groups:
+      k8s:
+        applies-to: version-updates
+        patterns:
+          - "k8s.io/*"
+      k8s-security:
+        applies-to: security-updates
+        patterns:
+          - "k8s.io/*"
 
   # Dependabot は `uses:` のタグと actions.lock の SHA を同じ commit で上げるので、
   # CI の actions-lock ジョブ (`gh actions-lock --verify`) を通る。
