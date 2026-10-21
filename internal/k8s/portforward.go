@@ -160,14 +160,16 @@ func StartPortForwardLoopWithFactory(
 				namespace, serviceName, podName, int(localPort), int(remotePort))
 		case <-ctx.Done():
 			return nil
-		case <-errChan:
+		case err := <-errChan:
 			// エラーまたは切断時は0.3秒待って再接続
+			logger.Debugf("port-forward failed before ready: %s/%s -> pod/%s: %v",
+				namespace, serviceName, podName, err)
 			time.Sleep(300 * time.Millisecond)
 			continue
 		}
 
 		// ForwardPortsの終了を待つ
-		<-errChan
+		err = <-errChan
 
 		// contextキャンセル時は正常終了
 		if ctx.Err() != nil {
@@ -175,8 +177,8 @@ func StartPortForwardLoopWithFactory(
 		}
 
 		// 切断ログ出力（debugレベル）
-		logger.Debugf("port-forward disconnected: %s/%s -> pod/%s (reconnecting...)",
-			namespace, serviceName, podName)
+		logger.Debugf("port-forward disconnected: %s/%s -> pod/%s (reconnecting...): %v",
+			namespace, serviceName, podName, err)
 
 		// エラーまたは切断時は0.3秒待って再接続
 		time.Sleep(300 * time.Millisecond)
