@@ -1,5 +1,16 @@
 # Changelog
 
+## [v0.4.6](https://github.com/usadamasa/kubectl-localmesh/compare/v0.4.5...v0.4.6) - 2026-10-22
+
+### New Features 🎉
+- chore(deps): bump actions/create-github-app-token from 3.2.0 to 3.3.0 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/140
+### Breaking Changes 🛠
+- chore(deps): bump actions/checkout from 6.1.0 to 7.0.1 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/139
+### Dependencies
+- chore(deps): bump github.com/santhosh-tekuri/jsonschema/v6 from 6.0.2 to 6.0.3 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/119
+### Other Changes
+- ci: setup-nix を gh-manage の共有 action へ移行する by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/149
+
 ## [v0.4.5](https://github.com/usadamasa/kubectl-localmesh/compare/v0.4.4...v0.4.5) - 2026-10-21
 
 ### Other Changes
