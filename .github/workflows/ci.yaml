@@ -3,6 +3,11 @@ name: CI
 
 "on":
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
   merge_group:
 
 permissions:
