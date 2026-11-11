@@ -30,7 +30,7 @@ updates:
 
   # devShell の Go と lint ツールの版は flake.lock の nixpkgs の rev で決まる。
   # nix の対象は flake.lock の input の更新だけで、security updates は出ない。
-  # flake.nix の devGo が fetchurl で差し替える go のソースは対象外。nixpkgs の
+  # flake.nix の devGo が差し替える go.dev の配布バイナリは対象外。nixpkgs の
   # go_1_27 が差し替え先の版に追いつけば、差し替えは自動で外れる。
   - package-ecosystem: nix
     directory: /
