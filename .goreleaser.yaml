@@ -20,6 +20,10 @@ builds:
     goos:
       - linux
       - darwin
+    # Intel Mac は対象外
+    ignore:
+      - goos: darwin
+        goarch: amd64
     flags:
       - -trimpath
     ldflags:
