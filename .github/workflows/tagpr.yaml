@@ -42,6 +42,8 @@ jobs:
       # Go と goreleaser は flake.nix の devShell から取る。版の正本は flake.lock
       - name: setup-nix
         uses: usadamasa/gh-manage/actions/setup-nix@main
+        with:
+          cache: false
 
       - name: "Release"
         if: "steps.tagpr.outputs.tag != ''"
