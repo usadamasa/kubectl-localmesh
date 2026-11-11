@@ -1,5 +1,27 @@
 # Changelog
 
+## [v0.4.6](https://github.com/usadamasa/kubectl-localmesh/compare/v0.4.5...v0.4.6) - 2026-11-11
+
+### New Features 🎉
+- chore(deps): bump actions/create-github-app-token from 3.2.0 to 3.3.0 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/140
+- chore(deps): bump golang.org/x/oauth2 from 0.36.0 to 0.37.0 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/150
+- chore(deps): bump Songmu/tagpr from 1.21.3 to 1.22.0 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/157
+### Breaking Changes 🛠
+- chore(deps): bump actions/checkout from 6.1.0 to 7.0.1 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/139
+### Dependencies
+- chore(deps): bump github.com/santhosh-tekuri/jsonschema/v6 from 6.0.2 to 6.0.3 by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/119
+- chore(deps): bump nixpkgs from `02c087f` to `31ecbac` by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/154
+- chore(deps): bump nixpkgs from `31ecbac` to `0bb2eed` by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/158
+- chore(deps): bump the k8s group across 1 directory with 3 updates by @dependabot[bot] in https://github.com/usadamasa/kubectl-localmesh/pull/152
+### Other Changes
+- ci: setup-nix を gh-manage の共有 action へ移行する by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/149
+- ci: pull_request の types に edited を足し、base の付け替えで CI を走り直させる by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/151
+- ci: pull_request の types から edited を外す by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/155
+- ci: actions.lock の検証を gh-manage の verify-actions-lock に置き換える by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/156
+- Go を 1.27.4 へ上げる by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/159
+- devShell の go を go.dev の配布バイナリに差し替える by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/162
+- ci: setup-nix の nix store キャッシュを止める by @usadamasa in https://github.com/usadamasa/kubectl-localmesh/pull/163
+
 ## [v0.4.5](https://github.com/usadamasa/kubectl-localmesh/compare/v0.4.4...v0.4.5) - 2026-10-21
 
 ### Other Changes
